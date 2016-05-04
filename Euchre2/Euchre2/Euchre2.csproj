@@ -32,6 +32,14 @@
     <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="dep\phaser.d.ts" />
     <TypeScriptCompile Include="dep\pixi.d.ts" />
+    <TypeScriptCompile Include="game\card.ts" />
+    <TypeScriptCompile Include="game\deck.ts" />
+    <TypeScriptCompile Include="game\gameStateController.ts" />
+    <TypeScriptCompile Include="game\mainGame.ts" />
+    <TypeScriptCompile Include="game\playerController.ts" />
+    <TypeScriptCompile Include="game\screenView.ts" />
+    <TypeScriptCompile Include="menu\mainmenu.ts" />
+    <TypeScriptCompile Include="preloader\preloader.ts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="web.Debug.config">
