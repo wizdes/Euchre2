@@ -9,11 +9,13 @@ var Namespace;
         __extends(Game, _super);
         function Game() {
             _super.call(this, {
-                width: 1600,
-                height: 900,
+                width: 900,
+                height: 1600,
                 renderer: Phaser.AUTO
             });
             this.state.add('game', Namespace.State.Game);
+            this.state.add('instructions', Namespace.State.Instructions);
+            this.state.add('credits', Namespace.State.Credits);
             this.state.add('mainmenu', Namespace.State.MainMenu);
             this.state.add('preloader', Namespace.State.Preloader, true);
         }

@@ -16,12 +16,27 @@ var Namespace;
             };
             MainMenu.prototype.create = function () {
                 //loading screen will have a white background
-                this.game.stage.backgroundColor = '#333';
+                this.game.stage.backgroundColor = '#eee';
                 // how to set background image?
-                this.game.add.sprite(0, 0, 'background');
+                this.game.add.text(500, 200, "EUCHRE!", { font: '60px dimboregular', fill: '#000' });
+                var startLabel = this.game.add.text(500, 600, "Start", { font: '55px dimboregular', fill: '#000' });
+                startLabel.inputEnabled = true;
+                startLabel.events.onInputDown.add(this.playGame);
+                var instructionsLabel = this.game.add.text(500, 700, "Instructions", { font: '55px dimboregular', fill: '#000' });
+                instructionsLabel.inputEnabled = true;
+                instructionsLabel.events.onInputDown.add(this.goToInstructions);
+                var creditsLabel = this.game.add.text(500, 800, "Credits", { font: '55px dimboregular', fill: '#000' });
+                creditsLabel.inputEnabled = true;
+                creditsLabel.events.onInputDown.add(this.goToCredits);
             };
-            MainMenu.prototype.playGame = function () {
-                this.game.state.start('game', true);
+            MainMenu.prototype.goToInstructions = function (event) {
+                event.game.state.start('instructions', true);
+            };
+            MainMenu.prototype.goToCredits = function (event) {
+                event.game.state.start('credits', true);
+            };
+            MainMenu.prototype.playGame = function (event) {
+                event.game.state.start('game', true);
             };
             return MainMenu;
         }(Phaser.State));

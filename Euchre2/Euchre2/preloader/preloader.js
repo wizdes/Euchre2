@@ -19,15 +19,10 @@ var Namespace;
                 this.loadingBar.setFillPercent(100);
                 var tween = this.game.add.tween(this.loadingBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
                 // loading screen will have a white background
-                this.game.stage.backgroundColor = '#fff';
+                this.game.stage.backgroundColor = '#000';
                 // scaling options
                 // this makes it scale to the screen
-                this.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
-                //have the game centered horizontally
-                //this.scale.pageAlignHorizontally = true;
-                //this.scale.pageAlignVertically = true;
-                //physics system
-                this.game.physics.startSystem(Phaser.Physics.ARCADE);
+                this.scale.scaleMode = Phaser.ScaleManager.NO_SCALE;
                 tween.onComplete.add(this.startGame, this);
             };
             Preloader.prototype.startGame = function () {
