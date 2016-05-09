@@ -1,5 +1,5 @@
 ﻿module Namespace.State {
-    export class Game extends Phaser.State {
+    export class Credits extends Phaser.State {
 
         preload() {
         }

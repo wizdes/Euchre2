@@ -1,5 +1,5 @@
 ﻿module Namespace.State {
-    export class Game extends Phaser.State {
+    export class Instructions extends Phaser.State {
 
         preload() {
         }

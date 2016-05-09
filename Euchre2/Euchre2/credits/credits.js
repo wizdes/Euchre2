@@ -7,18 +7,18 @@ var Namespace;
 (function (Namespace) {
     var State;
     (function (State) {
-        var Game = (function (_super) {
-            __extends(Game, _super);
-            function Game() {
+        var Credits = (function (_super) {
+            __extends(Credits, _super);
+            function Credits() {
                 _super.apply(this, arguments);
             }
-            Game.prototype.preload = function () {
+            Credits.prototype.preload = function () {
             };
-            Game.prototype.create = function () {
+            Credits.prototype.create = function () {
             };
-            return Game;
+            return Credits;
         }(Phaser.State));
-        State.Game = Game;
+        State.Credits = Credits;
     })(State = Namespace.State || (Namespace.State = {}));
 })(Namespace || (Namespace = {}));
-//# sourceMappingURL=mainGame.js.map
+//# sourceMappingURL=credits.js.map
