@@ -23,6 +23,74 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <Content Include="assets\cardBack_blue1.png" />
+    <Content Include="assets\cardBack_blue2.png" />
+    <Content Include="assets\cardBack_blue3.png" />
+    <Content Include="assets\cardBack_blue4.png" />
+    <Content Include="assets\cardBack_blue5.png" />
+    <Content Include="assets\cardBack_green1.png" />
+    <Content Include="assets\cardBack_green2.png" />
+    <Content Include="assets\cardBack_green3.png" />
+    <Content Include="assets\cardBack_green4.png" />
+    <Content Include="assets\cardBack_green5.png" />
+    <Content Include="assets\cardBack_red1.png" />
+    <Content Include="assets\cardBack_red2.png" />
+    <Content Include="assets\cardBack_red3.png" />
+    <Content Include="assets\cardBack_red4.png" />
+    <Content Include="assets\cardBack_red5.png" />
+    <Content Include="assets\cardClubs10.png" />
+    <Content Include="assets\cardClubs2.png" />
+    <Content Include="assets\cardClubs3.png" />
+    <Content Include="assets\cardClubs4.png" />
+    <Content Include="assets\cardClubs5.png" />
+    <Content Include="assets\cardClubs6.png" />
+    <Content Include="assets\cardClubs7.png" />
+    <Content Include="assets\cardClubs8.png" />
+    <Content Include="assets\cardClubs9.png" />
+    <Content Include="assets\cardClubsA.png" />
+    <Content Include="assets\cardClubsJ.png" />
+    <Content Include="assets\cardClubsK.png" />
+    <Content Include="assets\cardClubsQ.png" />
+    <Content Include="assets\cardDiamonds10.png" />
+    <Content Include="assets\cardDiamonds2.png" />
+    <Content Include="assets\cardDiamonds3.png" />
+    <Content Include="assets\cardDiamonds4.png" />
+    <Content Include="assets\cardDiamonds5.png" />
+    <Content Include="assets\cardDiamonds6.png" />
+    <Content Include="assets\cardDiamonds7.png" />
+    <Content Include="assets\cardDiamonds8.png" />
+    <Content Include="assets\cardDiamonds9.png" />
+    <Content Include="assets\cardDiamondsA.png" />
+    <Content Include="assets\cardDiamondsJ.png" />
+    <Content Include="assets\cardDiamondsK.png" />
+    <Content Include="assets\cardDiamondsQ.png" />
+    <Content Include="assets\cardHearts10.png" />
+    <Content Include="assets\cardHearts2.png" />
+    <Content Include="assets\cardHearts3.png" />
+    <Content Include="assets\cardHearts4.png" />
+    <Content Include="assets\cardHearts5.png" />
+    <Content Include="assets\cardHearts6.png" />
+    <Content Include="assets\cardHearts7.png" />
+    <Content Include="assets\cardHearts8.png" />
+    <Content Include="assets\cardHearts9.png" />
+    <Content Include="assets\cardHeartsA.png" />
+    <Content Include="assets\cardHeartsJ.png" />
+    <Content Include="assets\cardHeartsK.png" />
+    <Content Include="assets\cardHeartsQ.png" />
+    <Content Include="assets\cardJoker.png" />
+    <Content Include="assets\cardSpades10.png" />
+    <Content Include="assets\cardSpades2.png" />
+    <Content Include="assets\cardSpades3.png" />
+    <Content Include="assets\cardSpades4.png" />
+    <Content Include="assets\cardSpades5.png" />
+    <Content Include="assets\cardSpades6.png" />
+    <Content Include="assets\cardSpades7.png" />
+    <Content Include="assets\cardSpades8.png" />
+    <Content Include="assets\cardSpades9.png" />
+    <Content Include="assets\cardSpadesA.png" />
+    <Content Include="assets\cardSpadesJ.png" />
+    <Content Include="assets\cardSpadesK.png" />
+    <Content Include="assets\cardSpadesQ.png" />
     <Content Include="dep\phaser.js" />
     <Content Include="dep\phaser.min.js" />
     <Content Include="index.html" />
@@ -53,9 +121,7 @@
       <DependentUpon>web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="assets\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
   </PropertyGroup>

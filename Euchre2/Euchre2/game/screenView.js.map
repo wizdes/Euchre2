@@ -1,1 +1,1 @@
-{"version":3,"file":"screenView.js","sourceRoot":"","sources":["screenView.ts"],"names":[],"mappings":"AAAC,MAAM"}
+{"version":3,"file":"screenView.js","sourceRoot":"","sources":["screenView.ts"],"names":[],"mappings":"AAAA,IAAO,UAAU,CAQhB;AARD,WAAO,YAAU,EAAC,CAAC;IACf;QAGI,oBAAY,IAAI;YACZ,IAAI,CAAC,WAAW,GAAG,IAAI,CAAC;QAC5B,CAAC;QACL,iBAAC;IAAD,CAAC,AAND,IAMC;IANY,uBAAU,aAMtB,CAAA;AACL,CAAC,EARM,UAAU,KAAV,UAAU,QAQhB"}

@@ -4,6 +4,20 @@
 
         preload() {
             this.loadingBar = new Entity.PreloadBar(this.game);
+
+            var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+            var values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+
+            for (var i = 0; i < suits.length; i++) {
+                for (var j = 0; j < values.length; j++) {
+                    var suit = suits[i];
+                    var value = values[j];
+                    this.load.image(suit + "-" + value, 'assets/card' + suit + value + '.png');
+                }
+            }
+
+            this.load.image("cardBack", "assets/cardBack_red3.png");
+
         }
 
         create() {
