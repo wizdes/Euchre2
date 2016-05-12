@@ -14,6 +14,7 @@ var Namespace;
                 _super.apply(this, arguments);
             }
             Game.prototype.preload = function () {
+                this.currentView = new ScreenView.ScreenView(this);
             };
             Game.prototype.create = function () {
             };

@@ -4,6 +4,8 @@ module Namespace.State {
         currentView: ScreenView.ScreenView;
 
         preload() {
+            this.currentView = new ScreenView.ScreenView(this);
+
         }
 
         create() {
