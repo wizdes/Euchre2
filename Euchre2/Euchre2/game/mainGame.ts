@@ -5,6 +5,10 @@ module Namespace.State {
 
         preload() {
             this.currentView = new ScreenView.ScreenView(this);
+
+            //print a card
+            // go in, and move a card
+            // build a shuffle game state and and use the AI to shuffle the cards
         }
 
         create() {
@@ -16,6 +20,12 @@ module Namespace.State {
             
         }
     }
+
+    var handleUserInput = (result: number): void => {
+        alert(result.toString());
+    }
+
+
 }
 
 // this is what i want for the delegates 
@@ -26,9 +36,6 @@ module Namespace.State {
 //}
 //var foo = new Foo();
 
-//var strCallback = (result: string): void => {
-//    alert(result);
-//}
 //var numCallback = (result: number): void => {
 //    alert(result.toString());
 //}

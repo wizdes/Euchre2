@@ -15,6 +15,9 @@ var Namespace;
             }
             Game.prototype.preload = function () {
                 this.currentView = new ScreenView.ScreenView(this);
+                //print a card
+                // go in, and move a card
+                // build a shuffle game state and and use the AI to shuffle the cards
             };
             Game.prototype.create = function () {
                 // to remove
@@ -25,6 +28,9 @@ var Namespace;
             return Game;
         }(Phaser.State));
         State.Game = Game;
+        var handleUserInput = function (result) {
+            alert(result.toString());
+        };
     })(State = Namespace.State || (Namespace.State = {}));
 })(Namespace || (Namespace = {}));
 // this is what i want for the delegates 
@@ -34,9 +40,6 @@ var Namespace;
 //    }
 //}
 //var foo = new Foo();
-//var strCallback = (result: string): void => {
-//    alert(result);
-//}
 //var numCallback = (result: number): void => {
 //    alert(result.toString());
 //}
