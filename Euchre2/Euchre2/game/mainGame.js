@@ -11,7 +11,14 @@ var Namespace;
         var Game = (function (_super) {
             __extends(Game, _super);
             function Game() {
+                var _this = this;
                 _super.apply(this, arguments);
+                // pass this to each cardView to call
+                this.handleUserInput = function (suit, value) {
+                    if (_this.currentView.shouldMove()) {
+                    }
+                    alert(suit.toString());
+                };
             }
             Game.prototype.preload = function () {
                 this.currentView = new ScreenView.ScreenView(this);
@@ -21,16 +28,19 @@ var Namespace;
             };
             Game.prototype.create = function () {
                 // to remove
-                this.currentView.drawAt(50, 50, "Hearts", "A", 50, 50);
+                this.currentView.drawAt(50, 50, "Hearts", "A", 500, 500);
             };
             Game.prototype.update = function () {
+                // if there is a move operation
+                if (this.currentView.shouldMove()) {
+                    this.currentView.doMoveOperation();
+                }
+                else {
+                }
             };
             return Game;
         }(Phaser.State));
         State.Game = Game;
-        var handleUserInput = function (result) {
-            alert(result.toString());
-        };
     })(State = Namespace.State || (Namespace.State = {}));
 })(Namespace || (Namespace = {}));
 // this is what i want for the delegates 

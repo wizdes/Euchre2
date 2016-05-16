@@ -13,19 +13,27 @@ module Namespace.State {
 
         create() {
             // to remove
-            this.currentView.drawAt(50, 50, "Hearts", "A", 50, 50);
+            this.currentView.drawAt(50, 50, "Hearts", "A", 500, 500);
         }
 
         update() {
-            
+            // if there is a move operation
+            if (this.currentView.shouldMove()) {
+                this.currentView.doMoveOperation();
+            } else {
+                // encode logic for 
+            }
+        }
+
+        // pass this to each cardView to call
+        handleUserInput = (suit: string, value: string): void => {
+            if (this.currentView.shouldMove()) {
+                // skip, since you can't do anything if something is moving
+            }
+
+            alert(suit.toString());
         }
     }
-
-    var handleUserInput = (result: number): void => {
-        alert(result.toString());
-    }
-
-
 }
 
 // this is what i want for the delegates 

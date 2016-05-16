@@ -6,6 +6,8 @@ var ScreenView;
             this.suit = suit;
             this.x = posX;
             this.y = posY;
+            this.moveToX = posX;
+            this.moveToY = posY;
             this.imgObj = imgObj;
         }
         CardView.prototype.toMove = function () {
@@ -26,6 +28,9 @@ var ScreenView;
         function ScreenView(game) {
             this.map = {};
             this.currentGame = game;
+            this.moveSpeed = 50;
+            this.cardViews = new Array();
+            this.map = {};
             var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
             var values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
             for (var i = 0; i < suits.length; i++) {
@@ -42,6 +47,8 @@ var ScreenView;
             retrievedCardView.y = y;
             retrievedCardView.moveToX = moveToX;
             retrievedCardView.moveToY = moveToY;
+            retrievedCardView.imgObj.x = x;
+            retrievedCardView.imgObj.y = y;
         };
         ScreenView.prototype.addMoveTo = function (suit, value, moveToX, moveToY) {
             //.body.x 
@@ -49,10 +56,38 @@ var ScreenView;
             retrievedCardView.moveToX = moveToX;
             retrievedCardView.moveToY = moveToY;
         };
-        ScreenView.prototype.doMoveOperation = function () {
+        ScreenView.prototype.shouldMove = function () {
             for (var i = 0; i < this.cardViews.length; i++) {
                 if (this.cardViews[i].toMove())
                     return true;
+            }
+            return false;
+        };
+        ScreenView.prototype.abs = function (val) {
+            if (val < 0)
+                return -1 * val;
+            return val;
+        };
+        ScreenView.prototype.doMoveOperation = function () {
+            for (var i = 0; i < this.cardViews.length; i++) {
+                if (this.cardViews[i].toMove()) {
+                    var xMove = this.moveSpeed;
+                    if (this.cardViews[i].moveToX < this.cardViews[i].x)
+                        xMove = -1 * this.moveSpeed;
+                    var yMove = this.moveSpeed;
+                    if (this.cardViews[i].moveToY < this.cardViews[i].y)
+                        yMove = -1 * this.moveSpeed;
+                    if (this.abs(this.cardViews[i].moveToX - this.cardViews[i].x) < this.moveSpeed) {
+                        xMove = this.cardViews[i].moveToX - this.cardViews[i].x;
+                    }
+                    if (this.abs(this.cardViews[i].moveToY - this.cardViews[i].y) < this.moveSpeed) {
+                        yMove = this.cardViews[i].moveToY - this.cardViews[i].y;
+                    }
+                    this.cardViews[i].x += xMove;
+                    this.cardViews[i].y += yMove;
+                    this.cardViews[i].imgObj.x = this.cardViews[i].x;
+                    this.cardViews[i].imgObj.y = this.cardViews[i].y;
+                }
             }
             return false;
         };
