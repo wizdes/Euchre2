@@ -11,7 +11,7 @@ var ScreenView;
             this.imgObj = imgObj;
         }
         CardView.prototype.toMove = function () {
-            if (this.moveToX !== this.x && this.moveToY !== this.y) {
+            if (this.moveToX !== this.x || this.moveToY !== this.y) {
                 return true;
             }
             return false;
@@ -28,7 +28,7 @@ var ScreenView;
         function ScreenView(game) {
             this.map = {};
             this.currentGame = game;
-            this.moveSpeed = 50;
+            this.moveSpeed = 25;
             this.cardViews = new Array();
             this.map = {};
             var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
@@ -67,6 +67,24 @@ var ScreenView;
             if (val < 0)
                 return -1 * val;
             return val;
+        };
+        ScreenView.prototype.resolveAction = function (action) {
+            var initX = -1;
+            var initY = -1;
+            var finalX = -1;
+            var finalY = -1;
+            var actionElements = action.actionName.split("-");
+            if (actionElements[0] == "Move") {
+                if (actionElements[1] == "Deck") {
+                    initX = 50;
+                    initY = 50;
+                }
+                if (actionElements[2] == "Player1") {
+                    finalX = 500;
+                    finalY = 700;
+                }
+            }
+            this.drawAt(initX, initY, action.cardSuit, action.cardValue, finalX, finalY);
         };
         ScreenView.prototype.doMoveOperation = function () {
             for (var i = 0; i < this.cardViews.length; i++) {

@@ -1,10 +1,13 @@
 ﻿/// <reference path="screenView.ts"/>
+/// <reference path="gameStateController.ts"/>
 module Namespace.State {
     export class Game extends Phaser.State {
         currentView: ScreenView.ScreenView;
+        gameStateController: Controller.GameStateController;
 
         preload() {
             this.currentView = new ScreenView.ScreenView(this);
+            this.gameStateController = new Controller.GameStateController();
 
             //print a card
             // go in, and move a card
@@ -13,15 +16,21 @@ module Namespace.State {
 
         create() {
             // to remove
-            this.currentView.drawAt(50, 50, "Hearts", "A", 500, 500);
+            //this.currentView.drawAt(50, 50, "Clubs", "A", 500, 500);
         }
 
         update() {
             // if there is a move operation
             if (this.currentView.shouldMove()) {
                 this.currentView.doMoveOperation();
+            } else if (this.gameStateController.nextActionExists()) {
+                //  pull the action and execute it
+                var action = this.gameStateController.getNextAction();
+
+                this.currentView.resolveAction(action);
+
             } else {
-                // encode logic for 
+                this.gameStateController.setGameState();
             }
         }
 

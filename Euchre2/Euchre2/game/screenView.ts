@@ -1,5 +1,4 @@
 ﻿module ScreenView {
-
     class CardView {
         value: string;
         suit: string;
@@ -20,7 +19,7 @@
         }
 
         toMove() {
-            if (this.moveToX !== this.x && this.moveToY !== this.y) {
+            if (this.moveToX !== this.x || this.moveToY !== this.y) {
                 return true;
             }
 
@@ -44,7 +43,7 @@
 
         constructor(game) {
             this.currentGame = game;
-            this.moveSpeed = 50;
+            this.moveSpeed = 25;
             this.cardViews = new Array<CardView>();
             this.map = {};
 
@@ -89,6 +88,26 @@
         abs(val) {
             if (val < 0) return -1 * val;
             return val;
+        }
+
+        resolveAction(action) {
+            var initX = -1;
+            var initY = -1;
+            var finalX = -1;
+            var finalY = -1;
+            var actionElements = action.actionName.split("-");
+            if (actionElements[0] == "Move") {
+                if (actionElements[1] == "Deck") {
+                    initX = 50;
+                    initY = 50;
+                }
+
+                if (actionElements[2] == "Player1") {
+                    finalX = 500;
+                    finalY = 700;
+                }
+            }
+            this.drawAt(initX, initY, action.cardSuit, action.cardValue, finalX, finalY);
         }
 
         doMoveOperation() {

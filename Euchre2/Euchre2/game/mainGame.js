@@ -4,6 +4,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 /// <reference path="screenView.ts"/>
+/// <reference path="gameStateController.ts"/>
 var Namespace;
 (function (Namespace) {
     var State;
@@ -22,20 +23,27 @@ var Namespace;
             }
             Game.prototype.preload = function () {
                 this.currentView = new ScreenView.ScreenView(this);
+                this.gameStateController = new Controller.GameStateController();
                 //print a card
                 // go in, and move a card
                 // build a shuffle game state and and use the AI to shuffle the cards
             };
             Game.prototype.create = function () {
                 // to remove
-                this.currentView.drawAt(50, 50, "Hearts", "A", 500, 500);
+                //this.currentView.drawAt(50, 50, "Clubs", "A", 500, 500);
             };
             Game.prototype.update = function () {
                 // if there is a move operation
                 if (this.currentView.shouldMove()) {
                     this.currentView.doMoveOperation();
                 }
+                else if (this.gameStateController.nextActionExists()) {
+                    //  pull the action and execute it
+                    var action = this.gameStateController.getNextAction();
+                    this.currentView.resolveAction(action);
+                }
                 else {
+                    this.gameStateController.setGameState();
                 }
             };
             return Game;
