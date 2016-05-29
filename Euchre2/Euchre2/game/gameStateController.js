@@ -49,6 +49,12 @@ var Controller;
                     for (var i = 0; i < 5; i++) {
                         var card = this.deck.getNextCard();
                         this.actions.push(new Action("Move-Deck-Player1", -1, card.cardValue, card.cardSuit, null));
+                        card = this.deck.getNextCard();
+                        this.actions.push(new Action("Move-Deck-Player2", -1, card.cardValue, card.cardSuit, null));
+                        card = this.deck.getNextCard();
+                        this.actions.push(new Action("Move-Deck-Player3", -1, card.cardValue, card.cardSuit, null));
+                        card = this.deck.getNextCard();
+                        this.actions.push(new Action("Move-Deck-Player4", -1, card.cardValue, card.cardSuit, null));
                     }
                     this.state = GameState.SelectCardTrump;
                     break;

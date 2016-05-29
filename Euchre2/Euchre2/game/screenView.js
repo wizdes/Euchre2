@@ -24,6 +24,54 @@ var ScreenView;
         };
         return CardView;
     }());
+    var PlayerView = (function () {
+        function PlayerView(numPlayer) {
+            this.numCards = 0;
+            this.moveX = 0;
+            this.moveY = 0;
+            switch (numPlayer) {
+                case 0:
+                    this.initX = 80;
+                    this.initY = 1300;
+                    this.moveX = 150;
+                    break;
+                case 1:
+                    this.initX = 80;
+                    this.initY = 250;
+                    this.moveY = 200;
+                    break;
+                case 2:
+                    this.initX = 80;
+                    this.initY = 50;
+                    this.moveX = 150;
+                    break;
+                case 3:
+                    this.initX = 680;
+                    this.initY = 250;
+                    this.moveY = 200;
+                    break;
+                default:
+                    break;
+            }
+        }
+        PlayerView.prototype.addCard = function () {
+            this.numCards++;
+        };
+        PlayerView.prototype.removeCard = function () {
+            this.numCards--;
+        };
+        PlayerView.prototype.finalX = function () {
+            if (this.numCards == 0)
+                return -1;
+            return this.initX + (this.numCards - 1) * this.moveX;
+        };
+        PlayerView.prototype.finalY = function () {
+            if (this.numCards == 0)
+                return -1;
+            return this.initY + (this.numCards - 1) * this.moveY;
+        };
+        return PlayerView;
+    }());
     var ScreenView = (function () {
         function ScreenView(game) {
             this.map = {};
@@ -31,6 +79,10 @@ var ScreenView;
             this.moveSpeed = 25;
             this.cardViews = new Array();
             this.map = {};
+            this.players = new Array();
+            for (var i = 0; i < 4; i++) {
+                this.players.push(new PlayerView(i));
+            }
             var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
             var values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
             for (var i = 0; i < suits.length; i++) {
@@ -45,13 +97,12 @@ var ScreenView;
             var retrievedCardView = this.map[suit + '-' + value];
             retrievedCardView.x = x;
             retrievedCardView.y = y;
-            retrievedCardView.moveToX = moveToX;
-            retrievedCardView.moveToY = moveToY;
             retrievedCardView.imgObj.x = x;
             retrievedCardView.imgObj.y = y;
+            retrievedCardView.moveToX = moveToX;
+            retrievedCardView.moveToY = moveToY;
         };
         ScreenView.prototype.addMoveTo = function (suit, value, moveToX, moveToY) {
-            //.body.x 
             var retrievedCardView = this.map[suit + '-' + value];
             retrievedCardView.moveToX = moveToX;
             retrievedCardView.moveToY = moveToY;
@@ -76,12 +127,14 @@ var ScreenView;
             var actionElements = action.actionName.split("-");
             if (actionElements[0] == "Move") {
                 if (actionElements[1] == "Deck") {
-                    initX = 50;
-                    initY = 50;
+                    initX = 400;
+                    initY = 300;
                 }
-                if (actionElements[2] == "Player1") {
-                    finalX = 500;
-                    finalY = 700;
+                if (actionElements[2].indexOf("Player") != -1) {
+                    var playerNum = Number(actionElements[2].substr(actionElements[2].length - 1)) - 1;
+                    this.players[playerNum].addCard();
+                    finalX = this.players[playerNum].finalX();
+                    finalY = this.players[playerNum].finalY();
                 }
             }
             this.drawAt(initX, initY, action.cardSuit, action.cardValue, finalX, finalY);
