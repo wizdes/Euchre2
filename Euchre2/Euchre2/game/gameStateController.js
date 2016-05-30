@@ -2,15 +2,20 @@
 //controller
 var Controller;
 (function (Controller) {
-    var GameState;
     (function (GameState) {
         GameState[GameState["Shuffle"] = 0] = "Shuffle";
         GameState[GameState["SelectCardTrump"] = 1] = "SelectCardTrump";
-        GameState[GameState["SelectingCardTrump"] = 2] = "SelectingCardTrump";
-        GameState[GameState["SelectTrump"] = 3] = "SelectTrump";
-        GameState[GameState["GameUserInput"] = 4] = "GameUserInput";
-        GameState[GameState["GameAiInput"] = 5] = "GameAiInput";
-    })(GameState || (GameState = {}));
+        GameState[GameState["SelectCardTrumpPickupSwitch"] = 2] = "SelectCardTrumpPickupSwitch";
+        GameState[GameState["SelectingCardTrumpPickupSwitch"] = 3] = "SelectingCardTrumpPickupSwitch";
+        GameState[GameState["SelectCardTrumpFinishPickupStartGame"] = 4] = "SelectCardTrumpFinishPickupStartGame";
+        GameState[GameState["SelectCardTrumpPassAI"] = 5] = "SelectCardTrumpPassAI";
+        GameState[GameState["SelectingCardTrump"] = 6] = "SelectingCardTrump";
+        GameState[GameState["SelectTrump"] = 7] = "SelectTrump";
+        GameState[GameState["Game"] = 8] = "Game";
+        GameState[GameState["GameUserInput"] = 9] = "GameUserInput";
+        GameState[GameState["GameAiInput"] = 10] = "GameAiInput";
+    })(Controller.GameState || (Controller.GameState = {}));
+    var GameState = Controller.GameState;
     var Action = (function () {
         function Action(actionName, duration, cardValue, cardSuit, action) {
             this.actionName = actionName;
@@ -42,7 +47,10 @@ var Controller;
                 return null;
             }
         };
-        GameStateController.prototype.setGameState = function () {
+        GameStateController.prototype.setGameState = function (stateToSet) {
+            this.state = stateToSet;
+        };
+        GameStateController.prototype.setActionForGameState = function () {
             switch (this.state) {
                 case GameState.Shuffle:
                     // shuffle the cards
@@ -65,6 +73,16 @@ var Controller;
                     var card = this.deck.getNextCard();
                     this.actions.push(new Action("Move-Deck-Center", -1, card.cardValue, card.cardSuit, null));
                     this.state = GameState.SelectingCardTrump;
+                    break;
+                case GameState.SelectCardTrumpPickupSwitch:
+                    //create the sign
+                    this.actions.push(new Action("Show-SelectCardSwitch", -1, null, null, null));
+                    // wait for user input
+                    this.state = GameState.SelectingCardTrumpPickupSwitch;
+                    break;
+                case GameState.SelectCardTrumpPassAI:
+                    //calculate AI work
+                    // translate these into actions
                     break;
                 default:
                     return;

@@ -2,6 +2,9 @@
 /// <reference path="gameStateController.ts"/>
 module Namespace.State {
     export class Game extends Phaser.State {
+        game;
+        value;
+
         currentView: ScreenView.ScreenView;
         gameStateController: Controller.GameStateController;
 
@@ -25,17 +28,23 @@ module Namespace.State {
                 this.currentView.resolveAction(action);
 
             } else {
-                this.gameStateController.setGameState();
+                this.gameStateController.setActionForGameState();
             }
         }
 
         // pass this to each cardView to call
-        handleUserInput = (suit: string, value: string): void => {
-            if (this.currentView.shouldMove()) {
-                // skip, since you can't do anything if something is moving
+        handleUserInput(){
+            if (this.game.currentView.shouldMove()) {
+                //animation is going on. no user input is allowed, silly.
+                return;
             }
 
-            alert(suit.toString() + " " + value.toString());
+            if (this.value == "Pick up") {
+                this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPickupSwitch);
+            }
+            else if (this.value == "Pass") {
+                this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPassAI);                
+            }
         }
     }
 }

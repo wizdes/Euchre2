@@ -12,14 +12,7 @@ var Namespace;
         var Game = (function (_super) {
             __extends(Game, _super);
             function Game() {
-                var _this = this;
                 _super.apply(this, arguments);
-                // pass this to each cardView to call
-                this.handleUserInput = function (suit, value) {
-                    if (_this.currentView.shouldMove()) {
-                    }
-                    alert(suit.toString() + " " + value.toString());
-                };
             }
             Game.prototype.preload = function () {
                 this.currentView = new ScreenView.ScreenView(this);
@@ -39,7 +32,20 @@ var Namespace;
                     this.currentView.resolveAction(action);
                 }
                 else {
-                    this.gameStateController.setGameState();
+                    this.gameStateController.setActionForGameState();
+                }
+            };
+            // pass this to each cardView to call
+            Game.prototype.handleUserInput = function () {
+                if (this.game.currentView.shouldMove()) {
+                    //animation is going on. no user input is allowed, silly.
+                    return;
+                }
+                if (this.value == "Pick up") {
+                    this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPickupSwitch);
+                }
+                else if (this.value == "Pass") {
+                    this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPassAI);
                 }
             };
             return Game;

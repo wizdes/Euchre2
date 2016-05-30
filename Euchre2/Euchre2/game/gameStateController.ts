@@ -2,11 +2,16 @@
 //controller
 module Controller {
 
-    enum GameState {
+    export enum GameState {
         Shuffle,
         SelectCardTrump,
+        SelectCardTrumpPickupSwitch,
+        SelectingCardTrumpPickupSwitch,
+        SelectCardTrumpFinishPickupStartGame,
+        SelectCardTrumpPassAI,
         SelectingCardTrump,
         SelectTrump,
+        Game,
         GameUserInput,
         GameAiInput
     }
@@ -55,7 +60,11 @@ module Controller {
             }
         }
 
-        setGameState() {
+        setGameState(stateToSet) {
+            this.state = stateToSet;
+        }
+
+        setActionForGameState() {
             switch(this.state) {
                 case GameState.Shuffle:
                     // shuffle the cards
@@ -81,7 +90,16 @@ module Controller {
                     this.actions.push(new Action("Move-Deck-Center", -1, card.cardValue, card.cardSuit, null));
                     this.state = GameState.SelectingCardTrump;
                     break;
-
+                case GameState.SelectCardTrumpPickupSwitch:
+                    //create the sign
+                    this.actions.push(new Action("Show-SelectCardSwitch", -1, null, null, null));
+                    // wait for user input
+                    this.state = GameState.SelectingCardTrumpPickupSwitch;
+                    break;
+                case GameState.SelectCardTrumpPassAI:
+                    //calculate AI work
+                    // translate these into actions
+                    break;
                 default:
                     return;
             }    

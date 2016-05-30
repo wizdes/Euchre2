@@ -5,22 +5,24 @@ var ScreenView;
         function SignButtonView(game) {
             this.currentGame = game;
         }
-        SignButtonView.prototype.ShowActionTitle = function () {
-            this.PickupOrPass = this.currentGame.add.text(300, 400, 'Pick up card', { font: '30px dimboregular', fill: '#000' });
+        SignButtonView.prototype.Clear = function () {
+            if (this.ActionImgObj != null)
+                this.ActionImgObj.destroy();
+            if (this.Pickup != null)
+                this.Pickup.destroy();
+            if (this.Pass != null)
+                this.Pass.destroy();
+        };
+        SignButtonView.prototype.ShowActionTitle = function (text) {
+            this.ActionImgObj = this.PickupOrPass = this.currentGame.add.text(300, 400, text, { font: '30px dimboregular', fill: '#000' });
         };
         SignButtonView.prototype.ShowPickupOrPass = function () {
             this.Pickup = this.currentGame.add.text(300, 1000, 'Pick up', { font: '30px dimboregular', fill: '#000' });
             this.Pickup.inputEnabled = true;
-            this.Pickup.events.onInputDown.add(function (event) {
-                console.log("asdfasdf");
-                window.alert(42);
-            });
+            this.Pickup.events.onInputDown.add(this.currentGame.handleUserInput2, { suit: "Pick up", value: "Pick up", game: this.currentGame });
             this.Pass = this.currentGame.add.text(600, 1000, 'Pass', { font: '30px dimboregular', fill: '#000' });
             this.Pass.inputEnabled = true;
-            this.Pass.events.onInputDown.add(function (event) {
-                console.log("asdfasdf");
-                window.alert(43);
-            });
+            this.Pass.events.onInputDown.add(this.currentGame.handleUserInput2, { suit: "Pass", value: "Pass", game: this.currentGame });
         };
         return SignButtonView;
     }());
@@ -102,7 +104,7 @@ var ScreenView;
         function ScreenView(game) {
             this.map = {};
             this.currentGame = game;
-            this.moveSpeed = 50;
+            this.moveSpeed = 500;
             this.cardViews = new Array();
             this.hiddenCardViews = new Array();
             this.map = {};
@@ -185,8 +187,13 @@ var ScreenView;
             else if (actionElements[0] == "Show") {
                 //Show-SelectCardTrump
                 if (actionElements[1] == "SelectCardTrump") {
-                    this.signView.ShowActionTitle();
+                    this.signView.Clear();
+                    this.signView.ShowActionTitle('Pick up card');
                     this.signView.ShowPickupOrPass();
+                }
+                else if (actionElements[1] == "SelectCardSwitch") {
+                    this.signView.Clear();
+                    this.signView.ShowActionTitle('Select card to switch');
                 }
             }
         };
