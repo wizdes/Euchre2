@@ -18,7 +18,7 @@ var Namespace;
                 this.handleUserInput = function (suit, value) {
                     if (_this.currentView.shouldMove()) {
                     }
-                    alert(suit.toString());
+                    alert(suit.toString() + " " + value.toString());
                 };
             }
             Game.prototype.preload = function () {

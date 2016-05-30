@@ -35,7 +35,7 @@ module Namespace.State {
                 // skip, since you can't do anything if something is moving
             }
 
-            alert(suit.toString());
+            alert(suit.toString() + " " + value.toString());
         }
     }
 }

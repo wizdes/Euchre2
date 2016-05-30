@@ -9,17 +9,30 @@
         PickSpades;
         PickHearts;
         PickDiamonds;
+        Pickup;
+        Pass;
         constructor(game) {
             this.currentGame = game;
         }
 
         ShowActionTitle() {
-            this.currentGame.add.text(300, 100, 'Pick up card', { font: '30px dimboregular', fill: '#000' });
+            this.PickupOrPass = this.currentGame.add.text(300, 400, 'Pick up card', { font: '30px dimboregular', fill: '#000' });
         }
 
         ShowPickupOrPass() {
-            this.currentGame.add.text(500, 100, 'Pick up', { font: '30px dimboregular', fill: '#000' });
-            this.currentGame.add.text(600, 400, 'Pass', { font: '30px dimboregular', fill: '#000' });
+            this.Pickup = this.currentGame.add.text(300, 1000, 'Pick up', { font: '30px dimboregular', fill: '#000' });
+            this.Pickup.inputEnabled = true;
+            this.Pickup.events.onInputDown.add(function (event) {
+                console.log("asdfasdf");
+                window.alert(42);
+            });
+            this.Pass = this.currentGame.add.text(600, 1000, 'Pass', { font: '30px dimboregular', fill: '#000' });
+            this.Pass.inputEnabled = true;
+            this.Pass.events.onInputDown.add(function (event) {
+                console.log("asdfasdf");
+                window.alert(43);
+                
+            });
         }
     }
 
