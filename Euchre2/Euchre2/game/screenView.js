@@ -1,7 +1,21 @@
 var ScreenView;
 (function (ScreenView_1) {
+    var hiddenCardsLogic = true;
+    var SignButtonView = (function () {
+        function SignButtonView(game) {
+            this.currentGame = game;
+        }
+        SignButtonView.prototype.ShowActionTitle = function () {
+            this.currentGame.add.text(300, 100, 'Pick up card', { font: '30px dimboregular', fill: '#000' });
+        };
+        SignButtonView.prototype.ShowPickupOrPass = function () {
+            this.currentGame.add.text(500, 100, 'Pick up', { font: '30px dimboregular', fill: '#000' });
+            this.currentGame.add.text(600, 400, 'Pass', { font: '30px dimboregular', fill: '#000' });
+        };
+        return SignButtonView;
+    }());
     var CardView = (function () {
-        function CardView(value, suit, posX, posY, imgObj) {
+        function CardView(value, suit, posX, posY, imgObj, hiddenImgObj) {
             this.value = value;
             this.suit = suit;
             this.x = posX;
@@ -9,6 +23,8 @@ var ScreenView;
             this.moveToX = posX;
             this.moveToY = posY;
             this.imgObj = imgObj;
+            this.hiddenImgObj = hiddenImgObj;
+            this.isHidden = false;
         }
         CardView.prototype.toMove = function () {
             if (this.moveToX !== this.x || this.moveToY !== this.y) {
@@ -76,10 +92,12 @@ var ScreenView;
         function ScreenView(game) {
             this.map = {};
             this.currentGame = game;
-            this.moveSpeed = 25;
+            this.moveSpeed = 50;
             this.cardViews = new Array();
+            this.hiddenCardViews = new Array();
             this.map = {};
             this.players = new Array();
+            this.signView = new SignButtonView(this.currentGame);
             for (var i = 0; i < 4; i++) {
                 this.players.push(new PlayerView(i));
             }
@@ -87,25 +105,33 @@ var ScreenView;
             var values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
             for (var i = 0; i < suits.length; i++) {
                 for (var j = 0; j < values.length; j++) {
-                    var createdCardView = new CardView(values[j], suits[i], -1000, -1000, this.currentGame.add.sprite(-1000, -1000, suits[i] + '-' + values[j]));
+                    var createdCardView = new CardView(values[j], suits[i], -1000, -1000, this.currentGame.add.sprite(-1000, -1000, suits[i] + '-' + values[j]), this.currentGame.add.sprite(-1000, -1000, "cardBack"));
                     this.cardViews.push(createdCardView);
                     this.map[suits[i] + '-' + values[j]] = createdCardView;
                 }
             }
         }
-        ScreenView.prototype.drawAt = function (x, y, suit, value, moveToX, moveToY) {
+        ScreenView.prototype.drawAt = function (x, y, suit, value, moveToX, moveToY, hidden) {
             var retrievedCardView = this.map[suit + '-' + value];
             retrievedCardView.x = x;
             retrievedCardView.y = y;
-            retrievedCardView.imgObj.x = x;
-            retrievedCardView.imgObj.y = y;
             retrievedCardView.moveToX = moveToX;
             retrievedCardView.moveToY = moveToY;
+            retrievedCardView.isHidden = hidden;
+            if (hidden) {
+                retrievedCardView.hiddenImgObj.x = x;
+                retrievedCardView.hiddenImgObj.y = y;
+            }
+            else {
+                retrievedCardView.imgObj.x = x;
+                retrievedCardView.imgObj.y = y;
+            }
         };
-        ScreenView.prototype.addMoveTo = function (suit, value, moveToX, moveToY) {
+        ScreenView.prototype.addMoveTo = function (suit, value, moveToX, moveToY, hidden) {
             var retrievedCardView = this.map[suit + '-' + value];
             retrievedCardView.moveToX = moveToX;
             retrievedCardView.moveToY = moveToY;
+            retrievedCardView.isHidden = hidden;
         };
         ScreenView.prototype.shouldMove = function () {
             for (var i = 0; i < this.cardViews.length; i++) {
@@ -120,24 +146,39 @@ var ScreenView;
             return val;
         };
         ScreenView.prototype.resolveAction = function (action) {
-            var initX = -1;
-            var initY = -1;
-            var finalX = -1;
-            var finalY = -1;
             var actionElements = action.actionName.split("-");
             if (actionElements[0] == "Move") {
+                var initX = -1;
+                var initY = -1;
+                var finalX = -1;
+                var finalY = -1;
+                var hidden = false;
                 if (actionElements[1] == "Deck") {
                     initX = 400;
                     initY = 300;
                 }
                 if (actionElements[2].indexOf("Player") != -1) {
                     var playerNum = Number(actionElements[2].substr(actionElements[2].length - 1)) - 1;
+                    if (playerNum != 0) {
+                        hidden = hiddenCardsLogic;
+                    }
                     this.players[playerNum].addCard();
                     finalX = this.players[playerNum].finalX();
                     finalY = this.players[playerNum].finalY();
                 }
+                else if (actionElements[2].indexOf("Center") != -1) {
+                    finalX = 370;
+                    finalY = 710;
+                }
+                this.drawAt(initX, initY, action.cardSuit, action.cardValue, finalX, finalY, hidden);
             }
-            this.drawAt(initX, initY, action.cardSuit, action.cardValue, finalX, finalY);
+            else if (actionElements[0] == "Show") {
+                //Show-SelectCardTrump
+                if (actionElements[1] == "SelectCardTrump") {
+                    this.signView.ShowActionTitle();
+                    this.signView.ShowPickupOrPass();
+                }
+            }
         };
         ScreenView.prototype.doMoveOperation = function () {
             for (var i = 0; i < this.cardViews.length; i++) {
@@ -156,8 +197,14 @@ var ScreenView;
                     }
                     this.cardViews[i].x += xMove;
                     this.cardViews[i].y += yMove;
-                    this.cardViews[i].imgObj.x = this.cardViews[i].x;
-                    this.cardViews[i].imgObj.y = this.cardViews[i].y;
+                    if (this.cardViews[i].isHidden) {
+                        this.cardViews[i].hiddenImgObj.x = this.cardViews[i].x;
+                        this.cardViews[i].hiddenImgObj.y = this.cardViews[i].y;
+                    }
+                    else {
+                        this.cardViews[i].imgObj.x = this.cardViews[i].x;
+                        this.cardViews[i].imgObj.y = this.cardViews[i].y;
+                    }
                 }
             }
             return false;

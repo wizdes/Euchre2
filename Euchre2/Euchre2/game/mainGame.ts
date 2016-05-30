@@ -8,15 +8,10 @@ module Namespace.State {
         preload() {
             this.currentView = new ScreenView.ScreenView(this);
             this.gameStateController = new Controller.GameStateController();
-
-            //print a card
-            // go in, and move a card
-            // build a shuffle game state and and use the AI to shuffle the cards
         }
 
         create() {
             // to remove
-            //this.currentView.drawAt(50, 50, "Clubs", "A", 500, 500);
         }
 
         update() {

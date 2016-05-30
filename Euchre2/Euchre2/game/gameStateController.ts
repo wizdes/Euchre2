@@ -5,6 +5,7 @@ module Controller {
     enum GameState {
         Shuffle,
         SelectCardTrump,
+        SelectingCardTrump,
         SelectTrump,
         GameUserInput,
         GameAiInput
@@ -31,11 +32,13 @@ module Controller {
         private actions: Action[];
         private state: GameState;
         private deck: Model.Deck;
+        private trumpSelector: number;
 
         constructor() {
             this.actions = new Array<Action>();
             this.state = GameState.Shuffle;
             this.deck = new Model.Deck;
+            this.trumpSelector = 0;
         }
 
         nextActionExists() {
@@ -72,6 +75,13 @@ module Controller {
                     }
                     this.state = GameState.SelectCardTrump;
                     break;
+                case GameState.SelectCardTrump:
+                    this.actions.push(new Action("Show-SelectCardTrump", -1, null, null, null));
+                    var card = this.deck.getNextCard();
+                    this.actions.push(new Action("Move-Deck-Center", -1, card.cardValue, card.cardSuit, null));
+                    this.state = GameState.SelectingCardTrump;
+                    break;
+
                 default:
                     return;
             }    

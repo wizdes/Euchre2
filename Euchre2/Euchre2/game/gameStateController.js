@@ -6,9 +6,10 @@ var Controller;
     (function (GameState) {
         GameState[GameState["Shuffle"] = 0] = "Shuffle";
         GameState[GameState["SelectCardTrump"] = 1] = "SelectCardTrump";
-        GameState[GameState["SelectTrump"] = 2] = "SelectTrump";
-        GameState[GameState["GameUserInput"] = 3] = "GameUserInput";
-        GameState[GameState["GameAiInput"] = 4] = "GameAiInput";
+        GameState[GameState["SelectingCardTrump"] = 2] = "SelectingCardTrump";
+        GameState[GameState["SelectTrump"] = 3] = "SelectTrump";
+        GameState[GameState["GameUserInput"] = 4] = "GameUserInput";
+        GameState[GameState["GameAiInput"] = 5] = "GameAiInput";
     })(GameState || (GameState = {}));
     var Action = (function () {
         function Action(actionName, duration, cardValue, cardSuit, action) {
@@ -26,6 +27,7 @@ var Controller;
             this.actions = new Array();
             this.state = GameState.Shuffle;
             this.deck = new Model.Deck;
+            this.trumpSelector = 0;
         }
         GameStateController.prototype.nextActionExists = function () {
             return this.actions.length > 0;
@@ -57,6 +59,12 @@ var Controller;
                         this.actions.push(new Action("Move-Deck-Player4", -1, card.cardValue, card.cardSuit, null));
                     }
                     this.state = GameState.SelectCardTrump;
+                    break;
+                case GameState.SelectCardTrump:
+                    this.actions.push(new Action("Show-SelectCardTrump", -1, null, null, null));
+                    var card = this.deck.getNextCard();
+                    this.actions.push(new Action("Move-Deck-Center", -1, card.cardValue, card.cardSuit, null));
+                    this.state = GameState.SelectingCardTrump;
                     break;
                 default:
                     return;
