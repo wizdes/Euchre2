@@ -19,10 +19,10 @@ var ScreenView;
         SignButtonView.prototype.ShowPickupOrPass = function () {
             this.Pickup = this.currentGame.add.text(300, 1000, 'Pick up', { font: '30px dimboregular', fill: '#000' });
             this.Pickup.inputEnabled = true;
-            this.Pickup.events.onInputDown.add(this.currentGame.handleUserInput2, { suit: "Pick up", value: "Pick up", game: this.currentGame });
+            this.Pickup.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Pick up", value: "Pick up", game: this.currentGame });
             this.Pass = this.currentGame.add.text(600, 1000, 'Pass', { font: '30px dimboregular', fill: '#000' });
             this.Pass.inputEnabled = true;
-            this.Pass.events.onInputDown.add(this.currentGame.handleUserInput2, { suit: "Pass", value: "Pass", game: this.currentGame });
+            this.Pass.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Pass", value: "Pass", game: this.currentGame });
         };
         return SignButtonView;
     }());

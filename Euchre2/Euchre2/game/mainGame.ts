@@ -32,6 +32,8 @@ module Namespace.State {
             }
         }
 
+        handleUserInput2
+
         // pass this to each cardView to call
         handleUserInput(){
             if (this.game.currentView.shouldMove()) {
