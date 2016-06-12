@@ -11,7 +11,18 @@ module Controller {
         SelectCardTrumpPassAi,
         SwitchingCardWithMiddle,
         SelectingCardTrump,
-        Game
+        Game,
+        Game_RoundStart,
+        Game_AITurn,
+        Game_UserInputTurn,
+        Game_EndOfRound,
+        Game_EndOfSet,
+        Game_DetermineNextPlayerInRound,
+
+        //unused game states
+        SelectingTrumpCardAi,
+        SelectTrumpUser,
+        SelectTrumpAi,
     }
 
     export class Action {
@@ -38,6 +49,10 @@ module Controller {
         private trumpSelector: number;
         private players: PlayerController[];
         private cardInMiddleForTrump: Model.Card;
+        private roundStart: number;
+        // between 0-3, but always starts at 0 at the beginning of the turn
+        // to get the current player: roundStart + currentRoundTurnNumber
+        private currentRoundTurnNumber : number;
 
         constructor() {
             this.actions = new Array<Action>();
@@ -45,6 +60,8 @@ module Controller {
             this.state = GameState.Shuffle;
             this.deck = new Model.Deck;
             this.trumpSelector = 0;
+            this.roundStart = 0;
+            this.currentRoundTurnNumber = 0;
 
             for (var i = 0; i < 4; i++) this.players.push(new PlayerController());
         }
@@ -82,12 +99,25 @@ module Controller {
             this.cardInMiddleForTrump = null;
             //remove the sign
 
-            // add the "In Game" sign
+            // TODO: add the "In Game" sign
+        }
+
+        PlayCard(player, value, suit) {
+            //TODO: play the card (add actions)
+            this.currentRoundTurnNumber++;
+        }
+
+        AddAiAction(){
+            //TODO: encode actions
+            this.currentRoundTurnNumber++;
+            this.state = GameState.Game_DetermineNextPlayerInRound;
         }
 
         setActionForGameState() {
             switch(this.state) {
                 case GameState.Shuffle:
+                    // TODO: you will need to reset everything here
+
                     // shuffle the cards
                     this.deck.shuffle();
 
@@ -130,13 +160,52 @@ module Controller {
                     //calculate AI work
                     // translate these into actions
                     break;
+                case GameState.Game:
+                    this.state = GameState.Game_RoundStart;
+                    break;
+
+                case GameState.Game_RoundStart:
+                    this.currentRoundTurnNumber = 0;
+                    if(this.roundStart + this.currentRoundTurnNumber == 0){
+                        this.state = GameState.Game_UserInputTurn;
+                    }
+                    else{
+                        this.state = GameState.Game_AITurn;
+                    }
+                    break;
+                case GameState.Game_UserInputTurn:
+                    // show a sign it is your turn
+                    // wait for user input
+                    break;
+                case GameState.Game_AITurn:
+                    //add the actions of putting in one card
+                    AddAiAction();
+                    break;
+                case GameState.Game_DetermineNextPlayerInRound:
+                    if(this.currentRoundTurnNumber == 3){
+                        this.state = GameState.Game_EndOfRound;
+                        break;
+                    }
+                    else if(this.currentRoundTurnNumber + this.roundStart == 0){
+                        this.state = GameState.Game_UserInputTurn;
+                    }
+                    else{
+                        this.state = GameState.Game_AITurn;
+                    }
+                    break;
+                case GameState.Game_EndOfRound:
+                    this.state = GameState.Game_EndOfSet;
+                    // clean up board actions
+
+                    //calculate points here
+                    break;
+                case GameState.Game_EndOfSet:
+                    this.roundStart++;
+                    this.state = GameState.Shuffle;
+                    break;
                 default:
                     return;
             }    
         }
-
-        // if there is a list of actions, encode the action into the game
-
-        // if not, decide what to do
     }
 }
