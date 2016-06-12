@@ -121,6 +121,14 @@
             this.numCards--;
         }
 
+        getSortedX(p) {
+            return this.initX + p * this.moveX;
+        }
+
+        getSortedY(p) {
+            return this.initY + p * this.moveY;
+        }
+
         finalX() {
             if (this.numCards == 0) return -1;
             return this.initX + (this.numCards - 1) * this.moveX;
@@ -169,7 +177,7 @@
 
                     //here add the input
                     createdCardView.imgObj.inputEnabled = true;
-                    createdCardView.imgObj.onInputDown.add(this.currentGame.handleUserInput, {
+                    createdCardView.imgObj.events.onInputDown.add(this.currentGame.handleUserInput, {
                         suit: suits[i],
                         value: values[j],
                         action: "cardTouch",
@@ -285,12 +293,17 @@
             }
             else if (actionElements[0] == "Remove") {
                 if (actionElements[1] == "Card" && actionElements[2].indexOf("Player") != -1) {
+                    var playerNum = Number(actionElements[2].substr(actionElements[2].length - 1)) - 1;
                     this.players[playerNum].removeCard();
-                    this.drawAtNoInit(action.cardSuit, action.cardValue, -1000, -1000, hidden);
+                    this.drawAtNoInit(action.cardSuit, action.cardValue, -1000, -1000, false);
                 }
             }
             else if (actionElements[0] == "Sort") {
-                
+                var playerNum = Number(actionElements[2].substr(actionElements[2].length - 1)) - 1;
+                var numCard = Number(actionElements[3]);
+                var finalX = this.players[playerNum].getSortedX(numCard);
+                var finalY = this.players[playerNum].getSortedY(numCard);
+                this.drawAtNoInit(action.cardSuit, action.cardValue, finalX, finalY, false);
             }
         }
 

@@ -77,14 +77,12 @@ module Controller {
             this.actions.push(new Action("Remove-Card-Player1", -1, value, suit, null));
 
             for (var i = 0; i < this.players[player].cards.length; i++) {
-                this.actions.push(new Action("Sort-Hand-Player1-" + i, -1, this.players[player][i].cardValue, this.players[player][i].cardSuit, null));
+                this.actions.push(new Action("Sort-Hand-Player1-" + i, -1, this.players[player].cards[i].cardValue, this.players[player].cards[i].cardSuit, null));
             }
 
             this.players[player].addCard(this.cardInMiddleForTrump);
-            this.cardInMiddleForTrump = null;
-
             this.actions.push(new Action("Move-Middle-Player1", -1, this.cardInMiddleForTrump.cardValue, this.cardInMiddleForTrump.cardSuit, null));
-
+            this.cardInMiddleForTrump = null;
             //remove the sign
 
             // add the "In Game" sign

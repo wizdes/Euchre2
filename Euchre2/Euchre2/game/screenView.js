@@ -88,6 +88,12 @@ var ScreenView;
         PlayerView.prototype.removeCard = function () {
             this.numCards--;
         };
+        PlayerView.prototype.getSortedX = function (p) {
+            return this.initX + p * this.moveX;
+        };
+        PlayerView.prototype.getSortedY = function (p) {
+            return this.initY + p * this.moveY;
+        };
         PlayerView.prototype.finalX = function () {
             if (this.numCards == 0)
                 return -1;
@@ -120,7 +126,7 @@ var ScreenView;
                     var createdCardView = new CardView(values[j], suits[i], -1000, -1000, this.currentGame.add.sprite(-1000, -1000, suits[i] + '-' + values[j]), this.currentGame.add.sprite(-1000, -1000, "cardBack"));
                     //here add the input
                     createdCardView.imgObj.inputEnabled = true;
-                    createdCardView.imgObj.onInputDown.add(this.currentGame.handleUserInput, {
+                    createdCardView.imgObj.events.onInputDown.add(this.currentGame.handleUserInput, {
                         suit: suits[i],
                         value: values[j],
                         action: "cardTouch",
@@ -227,11 +233,17 @@ var ScreenView;
             }
             else if (actionElements[0] == "Remove") {
                 if (actionElements[1] == "Card" && actionElements[2].indexOf("Player") != -1) {
+                    var playerNum = Number(actionElements[2].substr(actionElements[2].length - 1)) - 1;
                     this.players[playerNum].removeCard();
-                    this.drawAtNoInit(action.cardSuit, action.cardValue, -1000, -1000, hidden);
+                    this.drawAtNoInit(action.cardSuit, action.cardValue, -1000, -1000, false);
                 }
             }
             else if (actionElements[0] == "Sort") {
+                var playerNum = Number(actionElements[2].substr(actionElements[2].length - 1)) - 1;
+                var numCard = Number(actionElements[3]);
+                var finalX = this.players[playerNum].getSortedX(numCard);
+                var finalY = this.players[playerNum].getSortedY(numCard);
+                this.drawAtNoInit(action.cardSuit, action.cardValue, finalX, finalY, false);
             }
         };
         ScreenView.prototype.doMoveOperation = function () {
