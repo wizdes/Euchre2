@@ -41,11 +41,21 @@ var Namespace;
                     //animation is going on. no user input is allowed, silly.
                     return;
                 }
-                if (this.value == "Pick up") {
+                if (this.action == "Pick up") {
                     this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPickupSwitch);
                 }
-                else if (this.value == "Pass") {
+                else if (this.action == "Pass") {
                     this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPassAI);
+                }
+                else if (this.action == "cardTouch") {
+                    if (this.game.gameStateController.state == Controller.GameState.SelectingCardTrumpPickupSwitch) {
+                        var val = this.value;
+                        var suit = this.suit;
+                        //add the action of removing the card in the middle and putting it in the hand
+                        //add the action of removing the card selected from the handle
+                        this.game.gameStateController.SwitchCardWithMiddle(0, this.value, this.suit);
+                        this.game.gameStateController.setGameState(Controller.GameState.SwitchingCardWithMiddle);
+                    }
                 }
             };
             return Game;

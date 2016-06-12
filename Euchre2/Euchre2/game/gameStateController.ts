@@ -9,6 +9,7 @@ module Controller {
         SelectingCardTrumpPickupSwitch,
         SelectCardTrumpFinishPickupStartGame,
         SelectCardTrumpPassAI,
+        SwitchingCardWithMiddle,
         SelectingCardTrump,
         SelectTrump,
         Game,
@@ -35,15 +36,20 @@ module Controller {
     export class GameStateController {
         // have a list of actions here
         private actions: Action[];
-        private state: GameState;
+        state: GameState;
         private deck: Model.Deck;
         private trumpSelector: number;
+        private players: PlayerController[];
+        private cardInMiddleForTrump: Model.Card;
 
         constructor() {
             this.actions = new Array<Action>();
+            this.players = new Array<PlayerController>();
             this.state = GameState.Shuffle;
             this.deck = new Model.Deck;
             this.trumpSelector = 0;
+
+            for (var i = 0; i < 4; i++) this.players.push(new PlayerController());
         }
 
         nextActionExists() {
@@ -64,6 +70,26 @@ module Controller {
             this.state = stateToSet;
         }
 
+
+        SwitchCardWithMiddle(player, value, suit) {
+            //add state for 'switching with the middle card'
+            this.players[player].removeCard(new Model.Card(suit, value));
+            this.actions.push(new Action("Remove-Card-Player1", -1, value, suit, null));
+
+            for (var i = 0; i < this.players[player].cards.length; i++) {
+                this.actions.push(new Action("Sort-Hand-Player1-" + i, -1, this.players[player][i].cardValue, this.players[player][i].cardSuit, null));
+            }
+
+            this.players[player].addCard(this.cardInMiddleForTrump);
+            this.cardInMiddleForTrump = null;
+
+            this.actions.push(new Action("Move-Middle-Player1", -1, this.cardInMiddleForTrump.cardValue, this.cardInMiddleForTrump.cardSuit, null));
+
+            //remove the sign
+
+            // add the "In Game" sign
+        }
+
         setActionForGameState() {
             switch(this.state) {
                 case GameState.Shuffle:
@@ -74,12 +100,16 @@ module Controller {
                     for (var i = 0; i < 5; i++)
                     {
                         var card = this.deck.getNextCard();
+                        this.players[0].addCard(card);
                         this.actions.push(new Action("Move-Deck-Player1", -1, card.cardValue, card.cardSuit, null));
                         card = this.deck.getNextCard();
+                        this.players[1].addCard(card);
                         this.actions.push(new Action("Move-Deck-Player2", -1, card.cardValue, card.cardSuit, null));
                         card = this.deck.getNextCard();
+                        this.players[2].addCard(card);
                         this.actions.push(new Action("Move-Deck-Player3", -1, card.cardValue, card.cardSuit, null));
                         card = this.deck.getNextCard();
+                        this.players[3].addCard(card);
                         this.actions.push(new Action("Move-Deck-Player4", -1, card.cardValue, card.cardSuit, null));
                     }
                     this.state = GameState.SelectCardTrump;
@@ -87,6 +117,7 @@ module Controller {
                 case GameState.SelectCardTrump:
                     this.actions.push(new Action("Show-SelectCardTrump", -1, null, null, null));
                     var card = this.deck.getNextCard();
+                    this.cardInMiddleForTrump = card;
                     this.actions.push(new Action("Move-Deck-Center", -1, card.cardValue, card.cardSuit, null));
                     this.state = GameState.SelectingCardTrump;
                     break;
@@ -95,6 +126,9 @@ module Controller {
                     this.actions.push(new Action("Show-SelectCardSwitch", -1, null, null, null));
                     // wait for user input
                     this.state = GameState.SelectingCardTrumpPickupSwitch;
+                    break;
+                case GameState.SwitchingCardWithMiddle:
+                    this.state = GameState.Game;
                     break;
                 case GameState.SelectCardTrumpPassAI:
                     //calculate AI work

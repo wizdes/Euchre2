@@ -4,6 +4,8 @@ module Namespace.State {
     export class Game extends Phaser.State {
         game;
         value;
+        suit;
+        action;
 
         currentView: ScreenView.ScreenView;
         gameStateController: Controller.GameStateController;
@@ -32,8 +34,6 @@ module Namespace.State {
             }
         }
 
-        handleUserInput2
-
         // pass this to each cardView to call
         handleUserInput(){
             if (this.game.currentView.shouldMove()) {
@@ -41,11 +41,22 @@ module Namespace.State {
                 return;
             }
 
-            if (this.value == "Pick up") {
+            if (this.action == "Pick up") {
                 this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPickupSwitch);
             }
-            else if (this.value == "Pass") {
+            else if (this.action == "Pass") {
                 this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPassAI);                
+            }
+            else if (this.action == "cardTouch") {
+                if (this.game.gameStateController.state == Controller.GameState.SelectingCardTrumpPickupSwitch) {
+                    var val = this.value;
+                    var suit = this.suit;
+
+                    //add the action of removing the card in the middle and putting it in the hand
+                    //add the action of removing the card selected from the handle
+                    this.game.gameStateController.SwitchCardWithMiddle(0, this.value, this.suit);
+                    this.game.gameStateController.setGameState(Controller.GameState.SwitchingCardWithMiddle);
+                }
             }
         }
     }

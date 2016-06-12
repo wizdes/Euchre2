@@ -9,11 +9,12 @@ var Controller;
         GameState[GameState["SelectingCardTrumpPickupSwitch"] = 3] = "SelectingCardTrumpPickupSwitch";
         GameState[GameState["SelectCardTrumpFinishPickupStartGame"] = 4] = "SelectCardTrumpFinishPickupStartGame";
         GameState[GameState["SelectCardTrumpPassAI"] = 5] = "SelectCardTrumpPassAI";
-        GameState[GameState["SelectingCardTrump"] = 6] = "SelectingCardTrump";
-        GameState[GameState["SelectTrump"] = 7] = "SelectTrump";
-        GameState[GameState["Game"] = 8] = "Game";
-        GameState[GameState["GameUserInput"] = 9] = "GameUserInput";
-        GameState[GameState["GameAiInput"] = 10] = "GameAiInput";
+        GameState[GameState["SwitchingCardWithMiddle"] = 6] = "SwitchingCardWithMiddle";
+        GameState[GameState["SelectingCardTrump"] = 7] = "SelectingCardTrump";
+        GameState[GameState["SelectTrump"] = 8] = "SelectTrump";
+        GameState[GameState["Game"] = 9] = "Game";
+        GameState[GameState["GameUserInput"] = 10] = "GameUserInput";
+        GameState[GameState["GameAiInput"] = 11] = "GameAiInput";
     })(Controller.GameState || (Controller.GameState = {}));
     var GameState = Controller.GameState;
     var Action = (function () {
@@ -30,9 +31,12 @@ var Controller;
     var GameStateController = (function () {
         function GameStateController() {
             this.actions = new Array();
+            this.players = new Array();
             this.state = GameState.Shuffle;
             this.deck = new Model.Deck;
             this.trumpSelector = 0;
+            for (var i = 0; i < 4; i++)
+                this.players.push(new Controller.PlayerController());
         }
         GameStateController.prototype.nextActionExists = function () {
             return this.actions.length > 0;
@@ -50,6 +54,19 @@ var Controller;
         GameStateController.prototype.setGameState = function (stateToSet) {
             this.state = stateToSet;
         };
+        GameStateController.prototype.SwitchCardWithMiddle = function (player, value, suit) {
+            //add state for 'switching with the middle card'
+            this.players[player].removeCard(new Model.Card(suit, value));
+            this.actions.push(new Action("Remove-Card-Player1", -1, value, suit, null));
+            for (var i = 0; i < this.players[player].cards.length; i++) {
+                this.actions.push(new Action("Sort-Hand-Player1-" + i, -1, this.players[player][i].cardValue, this.players[player][i].cardSuit, null));
+            }
+            this.players[player].addCard(this.cardInMiddleForTrump);
+            this.cardInMiddleForTrump = null;
+            this.actions.push(new Action("Move-Middle-Player1", -1, this.cardInMiddleForTrump.cardValue, this.cardInMiddleForTrump.cardSuit, null));
+            //remove the sign
+            // add the "In Game" sign
+        };
         GameStateController.prototype.setActionForGameState = function () {
             switch (this.state) {
                 case GameState.Shuffle:
@@ -58,12 +75,16 @@ var Controller;
                     // give player 1 5 cards, one after another
                     for (var i = 0; i < 5; i++) {
                         var card = this.deck.getNextCard();
+                        this.players[0].addCard(card);
                         this.actions.push(new Action("Move-Deck-Player1", -1, card.cardValue, card.cardSuit, null));
                         card = this.deck.getNextCard();
+                        this.players[1].addCard(card);
                         this.actions.push(new Action("Move-Deck-Player2", -1, card.cardValue, card.cardSuit, null));
                         card = this.deck.getNextCard();
+                        this.players[2].addCard(card);
                         this.actions.push(new Action("Move-Deck-Player3", -1, card.cardValue, card.cardSuit, null));
                         card = this.deck.getNextCard();
+                        this.players[3].addCard(card);
                         this.actions.push(new Action("Move-Deck-Player4", -1, card.cardValue, card.cardSuit, null));
                     }
                     this.state = GameState.SelectCardTrump;
@@ -71,6 +92,7 @@ var Controller;
                 case GameState.SelectCardTrump:
                     this.actions.push(new Action("Show-SelectCardTrump", -1, null, null, null));
                     var card = this.deck.getNextCard();
+                    this.cardInMiddleForTrump = card;
                     this.actions.push(new Action("Move-Deck-Center", -1, card.cardValue, card.cardSuit, null));
                     this.state = GameState.SelectingCardTrump;
                     break;
@@ -79,6 +101,9 @@ var Controller;
                     this.actions.push(new Action("Show-SelectCardSwitch", -1, null, null, null));
                     // wait for user input
                     this.state = GameState.SelectingCardTrumpPickupSwitch;
+                    break;
+                case GameState.SwitchingCardWithMiddle:
+                    this.state = GameState.Game;
                     break;
                 case GameState.SelectCardTrumpPassAI:
                     //calculate AI work

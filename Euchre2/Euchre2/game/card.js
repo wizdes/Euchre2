@@ -1,2 +1,2 @@
 //model 
-//# sourceMappingURL=card.js.map
+//# sourceMappingURL=Card.js.map
