@@ -8,13 +8,10 @@ module Controller {
         SelectCardTrumpPickupSwitch,
         SelectingCardTrumpPickupSwitch,
         SelectCardTrumpFinishPickupStartGame,
-        SelectCardTrumpPassAI,
+        SelectCardTrumpPassAi,
         SwitchingCardWithMiddle,
         SelectingCardTrump,
-        SelectTrump,
-        Game,
-        GameUserInput,
-        GameAiInput
+        Game
     }
 
     export class Action {
@@ -126,9 +123,10 @@ module Controller {
                     this.state = GameState.SelectingCardTrumpPickupSwitch;
                     break;
                 case GameState.SwitchingCardWithMiddle:
+                    this.actions.push(new Action("Show-StartGame", -1, null, null, null));
                     this.state = GameState.Game;
                     break;
-                case GameState.SelectCardTrumpPassAI:
+                case GameState.SelectCardTrumpPassAi:
                     //calculate AI work
                     // translate these into actions
                     break;

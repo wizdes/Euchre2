@@ -230,6 +230,10 @@ var ScreenView;
                     this.signView.Clear();
                     this.signView.ShowActionTitle('Select card to switch');
                 }
+                else if (actionElements[1] == "StartGame") {
+                    this.signView.Clear();
+                    this.signView.ShowActionTitle('Game start.');
+                }
             }
             else if (actionElements[0] == "Remove") {
                 if (actionElements[1] == "Card" && actionElements[2].indexOf("Player") != -1) {

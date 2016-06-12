@@ -8,13 +8,10 @@ var Controller;
         GameState[GameState["SelectCardTrumpPickupSwitch"] = 2] = "SelectCardTrumpPickupSwitch";
         GameState[GameState["SelectingCardTrumpPickupSwitch"] = 3] = "SelectingCardTrumpPickupSwitch";
         GameState[GameState["SelectCardTrumpFinishPickupStartGame"] = 4] = "SelectCardTrumpFinishPickupStartGame";
-        GameState[GameState["SelectCardTrumpPassAI"] = 5] = "SelectCardTrumpPassAI";
+        GameState[GameState["SelectCardTrumpPassAi"] = 5] = "SelectCardTrumpPassAi";
         GameState[GameState["SwitchingCardWithMiddle"] = 6] = "SwitchingCardWithMiddle";
         GameState[GameState["SelectingCardTrump"] = 7] = "SelectingCardTrump";
-        GameState[GameState["SelectTrump"] = 8] = "SelectTrump";
-        GameState[GameState["Game"] = 9] = "Game";
-        GameState[GameState["GameUserInput"] = 10] = "GameUserInput";
-        GameState[GameState["GameAiInput"] = 11] = "GameAiInput";
+        GameState[GameState["Game"] = 8] = "Game";
     })(Controller.GameState || (Controller.GameState = {}));
     var GameState = Controller.GameState;
     var Action = (function () {
@@ -103,9 +100,10 @@ var Controller;
                     this.state = GameState.SelectingCardTrumpPickupSwitch;
                     break;
                 case GameState.SwitchingCardWithMiddle:
+                    this.actions.push(new Action("Show-StartGame", -1, null, null, null));
                     this.state = GameState.Game;
                     break;
-                case GameState.SelectCardTrumpPassAI:
+                case GameState.SelectCardTrumpPassAi:
                     //calculate AI work
                     // translate these into actions
                     break;

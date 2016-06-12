@@ -45,7 +45,7 @@ module Namespace.State {
                 this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPickupSwitch);
             }
             else if (this.action == "Pass") {
-                this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPassAI);                
+                this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPassAi);                
             }
             else if (this.action == "cardTouch") {
                 if (this.game.gameStateController.state == Controller.GameState.SelectingCardTrumpPickupSwitch) {
