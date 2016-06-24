@@ -49,10 +49,12 @@ module Controller {
         private trumpSelector: number;
         private players: PlayerController[];
         private cardInMiddleForTrump: Model.Card;
-        private roundStart: number;
-        // between 0-3, but always starts at 0 at the beginning of the turn
-        // to get the current player: roundStart + currentRoundTurnNumber
-        private currentRoundTurnNumber : number;
+        private roundUserStart: number;
+        // between 0-4, but always starts at 0 at the beginning of the turn
+        // to get the current player: roundUserStart + currentRoundTurnNumber
+        private currentRoundTurnNumber: number;
+
+        private currentSetRoundNumber: number;
 
         constructor() {
             this.actions = new Array<Action>();
@@ -60,8 +62,9 @@ module Controller {
             this.state = GameState.Shuffle;
             this.deck = new Model.Deck;
             this.trumpSelector = 0;
-            this.roundStart = 0;
+            this.roundUserStart = 0;
             this.currentRoundTurnNumber = 0;
+            this.currentSetRoundNumber = 0;
 
             for (var i = 0; i < 4; i++) this.players.push(new PlayerController());
         }
@@ -103,12 +106,28 @@ module Controller {
         }
 
         PlayCard(player, value, suit) {
-            //TODO: play the card (add actions)
+            this.players[player].removeCard(new Model.Card(suit, value));
+            this.actions.push(new Action("Play-Card-Player1", -1, value, suit, null));
+
+            for (var i = 0; i < this.players[player].cards.length; i++) {
+                this.actions.push(new Action("Sort-Hand-Player1-" + i, -1, this.players[player].cards[i].cardValue, this.players[player].cards[i].cardSuit, null));
+            }
+
             this.currentRoundTurnNumber++;
         }
 
-        AddAiAction(){
-            //TODO: encode actions
+        AddAiAction() {
+            var cardIndex = this.players[this.currentRoundTurnNumber].cards.length - 1;
+            var value = this.players[this.currentRoundTurnNumber].cards[cardIndex].cardValue;
+            var suit = this.players[this.currentRoundTurnNumber].cards[cardIndex].cardSuit;
+
+            this.players[this.currentRoundTurnNumber].removeCard(new Model.Card(suit, value));
+            this.actions.push(new Action("Play-Card-Player" + (this.currentRoundTurnNumber + 1), -1, value, suit, null));
+
+            for (var i = 0; i < this.players[this.currentRoundTurnNumber].cards.length; i++) {
+                this.actions.push(new Action("Sort-Hand-Player" + (this.currentRoundTurnNumber + 1) + "-" + i, -1, this.players[this.currentRoundTurnNumber].cards[i].cardValue, this.players[this.currentRoundTurnNumber].cards[i].cardSuit, null));
+            }
+
             this.currentRoundTurnNumber++;
             this.state = GameState.Game_DetermineNextPlayerInRound;
         }
@@ -166,7 +185,7 @@ module Controller {
 
                 case GameState.Game_RoundStart:
                     this.currentRoundTurnNumber = 0;
-                    if(this.roundStart + this.currentRoundTurnNumber == 0){
+                    if(this.roundUserStart + this.currentRoundTurnNumber == 0){
                         this.state = GameState.Game_UserInputTurn;
                     }
                     else{
@@ -179,14 +198,14 @@ module Controller {
                     break;
                 case GameState.Game_AITurn:
                     //add the actions of putting in one card
-                    AddAiAction();
+                    this.AddAiAction();
                     break;
                 case GameState.Game_DetermineNextPlayerInRound:
-                    if(this.currentRoundTurnNumber == 3){
+                    if(this.currentRoundTurnNumber == 4){
                         this.state = GameState.Game_EndOfRound;
                         break;
                     }
-                    else if(this.currentRoundTurnNumber + this.roundStart == 0){
+                    else if(this.currentRoundTurnNumber + this.roundUserStart == 0){
                         this.state = GameState.Game_UserInputTurn;
                     }
                     else{
@@ -194,13 +213,19 @@ module Controller {
                     }
                     break;
                 case GameState.Game_EndOfRound:
-                    this.state = GameState.Game_EndOfSet;
-                    // clean up board actions
+                    this.currentSetRoundNumber++;
 
-                    //calculate points here
+                    if (this.currentSetRoundNumber == 5) {
+                        // clean up board actions 
+                        //calculate points here
+                        this.state = GameState.Game_EndOfSet;
+                    } else {
+                        this.state = GameState.Game_RoundStart;
+                    }
+
                     break;
                 case GameState.Game_EndOfSet:
-                    this.roundStart++;
+                    this.roundUserStart++;
                     this.state = GameState.Shuffle;
                     break;
                 default:

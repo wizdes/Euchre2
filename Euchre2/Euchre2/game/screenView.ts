@@ -151,7 +151,7 @@
 
         constructor(game) {
             this.currentGame = game;
-            this.moveSpeed = 500;
+            this.moveSpeed = 100;
             this.cardViews = new Array<CardView>();
             this.hiddenCardViews = new Array<CardView>();
             this.map = {};
@@ -204,11 +204,15 @@
             retrievedCardView.isHidden = hidden;
 
             if (hidden) {
-                retrievedCardView.hiddenImgObj.x = x;
+                retrievedCardView.hiddenImgObj.x = x
                 retrievedCardView.hiddenImgObj.y = y;
+                retrievedCardView.imgObj.x = -1000;
+                retrievedCardView.imgObj.y = -1000;
             } else {
+                retrievedCardView.hiddenImgObj.x = -1000;
+                retrievedCardView.hiddenImgObj.y = -1000;
                 retrievedCardView.imgObj.x = x;
-                retrievedCardView.imgObj.y = y;                
+                retrievedCardView.imgObj.y = y;
             }
         }
 
@@ -307,7 +311,12 @@
                 var numCard = Number(actionElements[3]);
                 var finalX = this.players[playerNum].getSortedX(numCard);
                 var finalY = this.players[playerNum].getSortedY(numCard);
-                this.drawAtNoInit(action.cardSuit, action.cardValue, finalX, finalY, false);
+                this.drawAtNoInit(action.cardSuit, action.cardValue, finalX, finalY, playerNum != 0);
+            }
+            else if (actionElements[0] == "Play") {
+                this.drawAtNoInit(action.cardSuit, action.cardValue, 400, 400, false);
+                var playerNum = Number(actionElements[2].substr(actionElements[2].length - 1)) - 1;
+                this.players[playerNum].removeCard();
             }
         }
 

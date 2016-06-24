@@ -49,12 +49,13 @@ var Namespace;
                 }
                 else if (this.action == "cardTouch") {
                     if (this.game.gameStateController.state == Controller.GameState.SelectingCardTrumpPickupSwitch) {
-                        var val = this.value;
-                        var suit = this.suit;
-                        //add the action of removing the card in the middle and putting it in the hand
-                        //add the action of removing the card selected from the handle
                         this.game.gameStateController.SwitchCardWithMiddle(0, this.value, this.suit);
                         this.game.gameStateController.setGameState(Controller.GameState.SwitchingCardWithMiddle);
+                    }
+                    else if (this.game.gameStateController.state == Controller.GameState.Game_UserInputTurn) {
+                        this.game.gameStateController.PlayCard(0, this.value, this.suit);
+                        // use this pattern in the future instead of 'ing' state 
+                        this.game.gameStateController.setGameState(Controller.GameState.Game_DetermineNextPlayerInRound);
                     }
                 }
             };
