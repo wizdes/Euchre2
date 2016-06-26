@@ -1,5 +1,5 @@
 ﻿module ScreenView {
-    var hiddenCardsLogic = true;
+    var hiddenCardsLogic = false;
 
     class SignButtonView {
         currentGame;

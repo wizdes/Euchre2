@@ -1,5 +1,13 @@
 var Model;
 (function (Model) {
+    (function (Suit) {
+        Suit[Suit["Hearts"] = 0] = "Hearts";
+        Suit[Suit["Spades"] = 1] = "Spades";
+        Suit[Suit["Clubs"] = 2] = "Clubs";
+        Suit[Suit["Diamonds"] = 3] = "Diamonds";
+        Suit[Suit["None"] = 4] = "None";
+    })(Model.Suit || (Model.Suit = {}));
+    var Suit = Model.Suit;
     var Deck = (function () {
         function Deck() {
             this.shuffle();

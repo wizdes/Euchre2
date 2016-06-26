@@ -1,4 +1,12 @@
 ﻿module Model {
+    export enum Suit {
+        Hearts,
+        Spades,
+        Clubs,
+        Diamonds,
+        None
+    }
+
     export class Deck {
         cards: Card[];
 

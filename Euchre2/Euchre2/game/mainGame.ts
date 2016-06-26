@@ -54,8 +54,6 @@ module Namespace.State {
                 }
                 else if(this.game.gameStateController.state == Controller.GameState.Game_UserInputTurn){
                     this.game.gameStateController.PlayCard(0, this.value, this.suit);
-                    // use this pattern in the future instead of 'ing' state 
-                    this.game.gameStateController.setGameState(Controller.GameState.Game_DetermineNextPlayerInRound);
                 }
             }
         }

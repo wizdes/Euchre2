@@ -41,12 +41,27 @@ module Controller {
         }
     }
 
+    export class CardsInMiddleLogic {
+        addCard(playerNum, card) {
+            
+        }
+
+        clear() {
+            
+        }
+
+        getWinner() {
+            
+        }
+    }
+
     export class GameStateController {
         // have a list of actions here
         private actions: Action[];
         state: GameState;
         private deck: Model.Deck;
-        private trumpSelector: number;
+        private trumpSelector: Model.Suit;
+        private secondarySelector: Model.Suit;
         private players: PlayerController[];
         private cardInMiddleForTrump: Model.Card;
         private roundUserStart: number;
@@ -56,21 +71,49 @@ module Controller {
 
         private currentSetRoundNumber: number;
 
+        private cardsInMiddleLogic: CardsInMiddleLogic;
+
         constructor() {
             this.actions = new Array<Action>();
             this.players = new Array<PlayerController>();
             this.state = GameState.Shuffle;
             this.deck = new Model.Deck;
-            this.trumpSelector = 0;
+            this.trumpSelector = Model.Suit.None;
+            this.secondarySelector = Model.Suit.None;
             this.roundUserStart = 0;
             this.currentRoundTurnNumber = 0;
             this.currentSetRoundNumber = 0;
+            this.cardsInMiddleLogic = new CardsInMiddleLogic();
 
             for (var i = 0; i < 4; i++) this.players.push(new PlayerController());
         }
 
         nextActionExists() {
             return this.actions.length > 0;
+        }
+
+        setTrumpSelector(suit) {
+            
+            this.trumpSelector = this.suitStringToSuit(suit);
+        }
+
+        suitStringToSuit(suit) {
+            switch(suit) {
+                case "Hearts":
+                    return Model.Suit.Hearts;
+                case "Diamonds":
+                    return Model.Suit.Diamonds;
+                case "Spades":
+                    return Model.Suit.Spades;
+                case "Clubs":
+                    return Model.Suit.Clubs;
+                default:
+                    return Model.Suit.None;
+            }
+        }
+
+        setSecondarySelector(suit) {
+            this.secondarySelector = this.suitStringToSuit(suit);
         }
 
         getNextAction() {
@@ -106,7 +149,42 @@ module Controller {
         }
 
         PlayCard(player, value, suit) {
+            var strictAvailableCardsToSelect = new Array<number>();
+            if (this.currentRoundTurnNumber != 0) {
+                // if you're the first, fuck it. just put them all in the damn list.
+                // generate this list by getting the trump cards and the cards that follow the thing
+                // if there's none at the end of this, fuck it, put them all the damn list.
+                for (var i = 0; i < this.players[this.GetCurrentAiPlayer()].cards.length; i++) {
+                    var suitToCheck = this.players[this.GetCurrentAiPlayer()].cards[i].cardSuit;
+                    var valueToCheck = this.players[this.GetCurrentAiPlayer()].cards[i].cardValue;
+                    if (this.secondarySelector == this.suitStringToSuit(suitToCheck) ||
+                        this.secondarySelector == Model.Suit.None ||
+                        this.isTrumpCard(suitToCheck, valueToCheck)) {
+                        strictAvailableCardsToSelect.push(i);
+                    }
+                }
+            }
+
+            // if you're the first player, do whatever the fuck you want.
+            if (this.currentRoundTurnNumber == 0) {
+                this.setSecondarySelector(suit);
+            } else {
+                //at this point, determine if the rules have been followed.
+                // does the card follow the trump rules?
+                //  if there is a trump, you must suit must be the trump
+                //  is trump even recorded?
+                //  else, is secondary suit played? 
+                // it is OK to play
+                if (this.secondarySelector != this.suitStringToSuit(suit) &&
+                    this.secondarySelector != Model.Suit.None &&
+                    this.suitStringToSuit(suit) != this.trumpSelector &&
+                    strictAvailableCardsToSelect.length > 0) {
+                    return;
+                }
+            }
+
             this.players[player].removeCard(new Model.Card(suit, value));
+
             this.actions.push(new Action("Play-Card-Player1", -1, value, suit, null));
 
             for (var i = 0; i < this.players[player].cards.length; i++) {
@@ -114,18 +192,71 @@ module Controller {
             }
 
             this.currentRoundTurnNumber++;
+
+            // use this pattern in the future instead of 'ing' state 
+            this.setGameState(GameState.Game_DetermineNextPlayerInRound);
+
+        }
+
+        GetCurrentAiPlayer() {
+            return (this.currentRoundTurnNumber + this.roundUserStart) % 4;
+        }
+
+        isTrumpCard(suit, value) {
+            if (this.suitStringToSuit(suit) == this.trumpSelector) {
+                return true;
+            }
+            if (value != "J") {
+                return false;
+            }
+            if ((suit == "Hearts" || suit == "Diamonds") && (this.trumpSelector == Model.Suit.Hearts || this.trumpSelector == Model.Suit.Diamonds)) {
+                return true;
+            }
+            if ((suit == "Spades" || suit == "Clubs") && (this.trumpSelector == Model.Suit.Spades || this.trumpSelector == Model.Suit.Clubs)) {
+                return true;
+            }
+
+            return false;
         }
 
         AddAiAction() {
-            var cardIndex = this.players[this.currentRoundTurnNumber].cards.length - 1;
-            var value = this.players[this.currentRoundTurnNumber].cards[cardIndex].cardValue;
-            var suit = this.players[this.currentRoundTurnNumber].cards[cardIndex].cardSuit;
+            var availableCardsToSelect = new Array<number>();
+            if (this.currentRoundTurnNumber != 0) {
+                // if you're the first, fuck it. just put them all in the damn list.
+                // generate this list by getting the trump cards and the cards that follow the thing
+                // if there's none at the end of this, fuck it, put them all the damn list.
+                for (var i = 0; i < this.players[this.GetCurrentAiPlayer()].cards.length; i++) {
+                    var suit = this.players[this.GetCurrentAiPlayer()].cards[i].cardSuit;
+                    var value = this.players[this.GetCurrentAiPlayer()].cards[i].cardValue;
+                    if (this.secondarySelector == this.suitStringToSuit(suit) ||
+                        this.secondarySelector == Model.Suit.None ||
+                        this.isTrumpCard(suit)) {
+                        availableCardsToSelect.push(i);
+                    }
+                }
+            }
 
-            this.players[this.currentRoundTurnNumber].removeCard(new Model.Card(suit, value));
-            this.actions.push(new Action("Play-Card-Player" + (this.currentRoundTurnNumber + 1), -1, value, suit, null));
+            if (availableCardsToSelect.length == 0) {
+                for (var i = 0; i < this.players[this.GetCurrentAiPlayer()].cards.length; i++) {
+                    availableCardsToSelect.push(i);
+                }
+            }
 
-            for (var i = 0; i < this.players[this.currentRoundTurnNumber].cards.length; i++) {
-                this.actions.push(new Action("Sort-Hand-Player" + (this.currentRoundTurnNumber + 1) + "-" + i, -1, this.players[this.currentRoundTurnNumber].cards[i].cardValue, this.players[this.currentRoundTurnNumber].cards[i].cardSuit, null));
+            // all of these need to change to 'this.currentRoundTurnNumber + this.roundUserStart'
+            // maybe make that into a function, yeah?
+            var cardIndex = availableCardsToSelect[availableCardsToSelect.length - 1];
+            var value = this.players[this.GetCurrentAiPlayer()].cards[cardIndex].cardValue;
+            var suit = this.players[this.GetCurrentAiPlayer()].cards[cardIndex].cardSuit;
+
+            if (this.currentRoundTurnNumber == 0) {
+                this.setSecondarySelector(suit);
+            }
+
+            this.players[this.GetCurrentAiPlayer()].removeCard(new Model.Card(suit, value));
+            this.actions.push(new Action("Play-Card-Player" + (this.GetCurrentAiPlayer() + 1), -1, value, suit, null));
+
+            for (var i = 0; i < this.players[this.GetCurrentAiPlayer()].cards.length; i++) {
+                this.actions.push(new Action("Sort-Hand-Player" + (this.GetCurrentAiPlayer() + 1) + "-" + i, -1, this.players[this.GetCurrentAiPlayer()].cards[i].cardValue, this.players[this.GetCurrentAiPlayer()].cards[i].cardSuit, null));
             }
 
             this.currentRoundTurnNumber++;
@@ -168,6 +299,7 @@ module Controller {
                 case GameState.SelectCardTrumpPickupSwitch:
                     //create the sign
                     this.actions.push(new Action("Show-SelectCardSwitch", -1, null, null, null));
+                    this.setTrumpSelector(this.cardInMiddleForTrump.cardSuit);
                     // wait for user input
                     this.state = GameState.SelectingCardTrumpPickupSwitch;
                     break;
@@ -185,7 +317,9 @@ module Controller {
 
                 case GameState.Game_RoundStart:
                     this.currentRoundTurnNumber = 0;
-                    if(this.roundUserStart + this.currentRoundTurnNumber == 0){
+                    this.setSecondarySelector("None");
+                    //GetCurrentAiPlayer
+                    if (this.GetCurrentAiPlayer() == 0){
                         this.state = GameState.Game_UserInputTurn;
                     }
                     else{
@@ -205,7 +339,7 @@ module Controller {
                         this.state = GameState.Game_EndOfRound;
                         break;
                     }
-                    else if(this.currentRoundTurnNumber + this.roundUserStart == 0){
+                    else if (this.GetCurrentAiPlayer() == 0){
                         this.state = GameState.Game_UserInputTurn;
                     }
                     else{
@@ -221,6 +355,7 @@ module Controller {
 
                         //calculate points here
                         this.state = GameState.Game_EndOfSet;
+                        this.currentSetRoundNumber = 0;
                     } else {
                         this.state = GameState.Game_RoundStart;
                     }
@@ -228,6 +363,7 @@ module Controller {
                     break;
                 case GameState.Game_EndOfSet:
                     this.roundUserStart++;
+                    this.roundUserStart = this.roundUserStart % 4;
                     this.state = GameState.Shuffle;
                     break;
                 default:

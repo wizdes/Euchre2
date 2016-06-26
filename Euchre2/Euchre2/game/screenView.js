@@ -1,6 +1,6 @@
 var ScreenView;
 (function (ScreenView_1) {
-    var hiddenCardsLogic = true;
+    var hiddenCardsLogic = false;
     var SignButtonView = (function () {
         function SignButtonView(game) {
             this.currentGame = game;
