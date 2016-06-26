@@ -314,10 +314,37 @@
                 this.drawAtNoInit(action.cardSuit, action.cardValue, finalX, finalY, playerNum != 0);
             }
             else if (actionElements[0] == "Play") {
-                this.drawAtNoInit(action.cardSuit, action.cardValue, 400, 400, false);
                 var playerNum = Number(actionElements[2].substr(actionElements[2].length - 1)) - 1;
+
+                this.drawAtNoInit(action.cardSuit, action.cardValue, this.getPlayerCenterX(playerNum), this.getPlayerCenterY(playerNum), false);
                 this.players[playerNum].removeCard();
             }
+            else if (actionElements[0] == "Clean") {
+                var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+                var values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+
+                for (var i = 0; i < suits.length; i++) {
+                    for (var j = 0; j < values.length; j++) {
+                        this.drawAtNoInit(suits[i], values[j], -300, -300, false);
+                    }
+                }
+            }
+        }
+
+        getPlayerCenterX(player) {
+            if (player == 0 || player == 2) {
+                return 385;
+            }
+            if (player == 1) return 235;
+            return 535;
+        }
+
+        getPlayerCenterY(player) {
+            if (player == 1 || player == 3) {
+                return 450;
+            }
+            if (player == 2) return 250;
+            return 650;            
         }
 
         doMoveOperation() {

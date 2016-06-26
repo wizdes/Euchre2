@@ -176,7 +176,8 @@ var Controller;
                 case GameState.Game_EndOfRound:
                     this.currentSetRoundNumber++;
                     if (this.currentSetRoundNumber == 5) {
-                        // clean up board actions 
+                        // clean up board actions
+                        this.actions.push(new Action("Clean-Board", -1, null, null, null));
                         //calculate points here
                         this.state = GameState.Game_EndOfSet;
                     }

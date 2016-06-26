@@ -8,13 +8,21 @@ var Model;
             this.cards = new Array();
             var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
             var values = ["9", "10", "J", "Q", "K", "A"];
+            var prefabDeck = new Array();
             for (var i = 0; i < suits.length; i++) {
                 for (var j = 0; j < values.length; j++) {
                     var createdCard = new Card(suits[i], values[j]);
-                    this.cards.push(createdCard);
+                    prefabDeck.push(createdCard);
                 }
             }
             // actually shuffle the damn thing
+            var index = 24;
+            while (index > 0) {
+                var selectedCardIndex = Math.floor(Math.random() * index);
+                this.cards.push(prefabDeck[selectedCardIndex]);
+                prefabDeck.splice(selectedCardIndex, 1);
+                index--;
+            }
         };
         Deck.prototype.getNextCard = function () {
             if (this.cards.length > 0) {
