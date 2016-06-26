@@ -183,7 +183,7 @@ var Controller;
                     var value = this.players[this.GetCurrentAiPlayer()].cards[i].cardValue;
                     if (this.secondarySelector == this.suitStringToSuit(suit) ||
                         this.secondarySelector == Model.Suit.None ||
-                        this.isTrumpCard(suit)) {
+                        this.isTrumpCard(suit, value)) {
                         availableCardsToSelect.push(i);
                     }
                 }
