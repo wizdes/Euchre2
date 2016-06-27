@@ -42,16 +42,125 @@ module Controller {
     }
 
     export class CardsInMiddleLogic {
-        addCard(playerNum, card) {
-            
+        cards: Model.Card[];
+        private cardOwner: number[];
+        private trump: Model.Suit;
+        private leadCardSuit: Model.Suit;
+        private controller: GameStateController;
+
+        constructor(controller) {
+            this.reset(Model.Suit.None);
+            this.controller = controller;
         }
 
-        clear() {
-            
+        addCard(playerNum, card, isLeadCard) {
+            this.cards.push(card);
+            this.cardOwner.push(playerNum);
+
+            if (isLeadCard) {
+                this.leadCardSuit = this.controller.suitStringToSuit(card.cardSuit);
+            }
+        }
+
+        reset(suit) {
+            this.cards = new Array<Model.Card>();
+            this.cardOwner = new Array<number>();            
+            this.trump = suit;
+        }
+
+        getHighestTrumpPlayer(trumpCards) {
+            if (trumpCards.length == 1) return this.cardOwner[trumpCards[0]];
+
+            var highestValue = -1;
+            var highestValueIndex = -1;
+
+            for (var i = 0; i < trumpCards.length; i++) {
+                var valueOfCard = this.getValueOfCardTrump(this.cards[trumpCards[i]]);
+                if (valueOfCard > highestValue) {
+                    highestValue = valueOfCard;
+                    highestValueIndex = trumpCards[i];
+                }                
+            }
+
+            return this.cardOwner[highestValueIndex];
+        }
+
+        getValueOfCardTrump(card) {
+            switch (card.cardValue) {
+                case "9":
+                    return 1;
+                case "10":
+                    return 2;
+                case "J":
+                    if (this.controller.suitStringToSuit(card.cardSuit) == this.trump) {
+                        return 7;
+                    }
+                    return 6;
+                case "Q":
+                    return 3;
+                case "K":
+                    return 4;
+                case "A":
+                    return 5;
+                default:
+                    return -1;
+            }
+        }
+
+        getValueOfCard(card) {
+            switch(card.cardValue) {
+                case "9":
+                    return 1;
+                case "10":
+                    return 2;
+                case "J":
+                    return 3;
+                case "Q":
+                    return 4;
+                case "K":
+                    return 5;
+                case "A":
+                    return 6;
+                default:
+                    return -1;
+            }
+        }
+
+        getHighestMatchingLeadCardPlayer(matchingLeadCards) {
+            if (matchingLeadCards.length == 1) return this.cardOwner[matchingLeadCards[0]];
+
+            var highestValue = -1;
+            var highestValueIndex = -1;
+
+            for (var i = 0; i < matchingLeadCards.length; i++) {
+                var valueOfCard = this.getValueOfCard(this.cards[matchingLeadCards[i]]);
+                if (valueOfCard > highestValue) {
+                    highestValue = valueOfCard;
+                    highestValueIndex = matchingLeadCards[i];
+                }
+            }
+
+            return this.cardOwner[highestValueIndex];
         }
 
         getWinner() {
-            
+            var trumpCards = new Array<number>();
+            for (var i = 0; i < 4; i++) {
+                if (this.controller.isTrumpCard(this.cards[i].cardSuit, this.cards[i].cardValue)) {
+                    trumpCards.push(i);
+                }
+            }
+
+            if (trumpCards.length > 0) return this.getHighestTrumpPlayer(trumpCards);
+
+            var matchingLeadCards = new Array<number>();
+            for (var i = 0; i < 4; i++) {
+                if (this.controller.suitStringToSuit(this.cards[i].cardSuit) == this.leadCardSuit) {
+                    matchingLeadCards.push(i);
+                }
+            }
+
+            return this.getHighestMatchingLeadCardPlayer(matchingLeadCards);
         }
     }
 
@@ -73,6 +182,12 @@ module Controller {
 
         private cardsInMiddleLogic: CardsInMiddleLogic;
 
+        private crossScore: number;
+        private sideScore: number;
+
+        private globalCrossScore: number;
+        private globalSideScore : number;
+
         constructor() {
             this.actions = new Array<Action>();
             this.players = new Array<PlayerController>();
@@ -83,7 +198,11 @@ module Controller {
             this.roundUserStart = 0;
             this.currentRoundTurnNumber = 0;
             this.currentSetRoundNumber = 0;
-            this.cardsInMiddleLogic = new CardsInMiddleLogic();
+            this.cardsInMiddleLogic = new CardsInMiddleLogic(this);
+            this.crossScore = 0;
+            this.sideScore = 0;
+            this.globalCrossScore = 0;
+            this.globalSideScore = 0;
 
             for (var i = 0; i < 4; i++) this.players.push(new PlayerController());
         }
@@ -93,8 +212,8 @@ module Controller {
         }
 
         setTrumpSelector(suit) {
-            
             this.trumpSelector = this.suitStringToSuit(suit);
+            this.cardsInMiddleLogic.reset(this.trumpSelector);
         }
 
         suitStringToSuit(suit) {
@@ -177,11 +296,13 @@ module Controller {
                 // it is OK to play
                 if (this.secondarySelector != this.suitStringToSuit(suit) &&
                     this.secondarySelector != Model.Suit.None &&
-                    this.suitStringToSuit(suit) != this.trumpSelector &&
+                    !this.isTrumpCard(suit, value) &&
                     strictAvailableCardsToSelect.length > 0) {
                     return;
                 }
             }
+
+            this.cardsInMiddleLogic.addCard(player, new Model.Card(suit, value), this.currentRoundTurnNumber == 0);
 
             this.players[player].removeCard(new Model.Card(suit, value));
 
@@ -252,6 +373,8 @@ module Controller {
                 this.setSecondarySelector(suit);
             }
 
+            this.cardsInMiddleLogic.addCard(this.GetCurrentAiPlayer(), new Model.Card(suit, value), this.currentRoundTurnNumber == 0);
+
             this.players[this.GetCurrentAiPlayer()].removeCard(new Model.Card(suit, value));
             this.actions.push(new Action("Play-Card-Player" + (this.GetCurrentAiPlayer() + 1), -1, value, suit, null));
 
@@ -267,6 +390,8 @@ module Controller {
             switch(this.state) {
                 case GameState.Shuffle:
                     // TODO: you will need to reset everything here
+                    this.sideScore = 0;
+                    this.crossScore = 0;
 
                     // shuffle the cards
                     this.deck.shuffle();
@@ -317,6 +442,7 @@ module Controller {
 
                 case GameState.Game_RoundStart:
                     this.currentRoundTurnNumber = 0;
+                    this.cardsInMiddleLogic.reset(this.trumpSelector);
                     this.setSecondarySelector("None");
                     //GetCurrentAiPlayer
                     if (this.GetCurrentAiPlayer() == 0){
@@ -349,14 +475,43 @@ module Controller {
                 case GameState.Game_EndOfRound:
                     this.currentSetRoundNumber++;
 
+                    var winnerIndex = this.cardsInMiddleLogic.getWinner();
+                    this.roundUserStart = winnerIndex;
+
+                    console.log(this.crossScore + " " + this.sideScore + " " + this.globalCrossScore + " " + this.globalSideScore);
+
+                    if (winnerIndex == 0 || winnerIndex == 2) {
+                        this.crossScore++;
+                    } else {
+                        this.sideScore++;
+                    }
+
                     if (this.currentSetRoundNumber == 5) {
                         // clean up board actions
                         this.actions.push(new Action("Clean-Board", -1, null, null, null));
 
                         //calculate points here
+
+                        if (this.crossScore > this.sideScore) {
+                            this.globalCrossScore++;
+                        } else {
+                            this.globalSideScore++;
+                        }
+
+                        this.sideScore = 0;
+                        this.crossScore = 0;
+
                         this.state = GameState.Game_EndOfSet;
                         this.currentSetRoundNumber = 0;
                     } else {
+                        var str = "";
+                        for (var i = 0; i < 4; i++) {
+                            str += this.cardsInMiddleLogic.cards[i].cardSuit + "," + this.cardsInMiddleLogic.cards[i].cardValue;
+                            if (i != 3) str += ";";
+                        }
+                        this.actions.push(new Action("Clear-" + str + "-" + (winnerIndex + 1), -1, null, null, null));
+                        console.log("after:" + this.crossScore + " " + this.sideScore + " " + this.globalCrossScore + " " + this.globalSideScore);
+
                         this.state = GameState.Game_RoundStart;
                     }
 

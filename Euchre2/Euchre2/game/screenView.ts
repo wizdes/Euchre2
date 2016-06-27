@@ -329,6 +329,29 @@
                     }
                 }
             }
+            else if (actionElements[0] == "Clear") {
+                var cardRep = actionElements[1].split(';');
+                var playerNum = Number(actionElements[2].substr(actionElements[2].length - 1)) - 1;
+                for (var i = 0; i < 4; i++) {
+                    this.drawAtNoInit(cardRep[i].split(",")[0], cardRep[i].split(",")[1], this.getPlayerClearX(playerNum), this.getPlayerClearY(playerNum), false);
+                }
+            }
+        }
+
+        getPlayerClearX(player) {
+            if (player == 0 || player == 2) {
+                return 385;
+            }
+            if (player == 1) return -235;
+            return 1000;
+        }
+
+        getPlayerClearY(player) {
+            if (player == 1 || player == 3) {
+                return 450;
+            }
+            if (player == 2) return -250;
+            return 1650;
         }
 
         getPlayerCenterX(player) {
