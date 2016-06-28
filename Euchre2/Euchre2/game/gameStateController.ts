@@ -11,6 +11,7 @@ module Controller {
         SelectCardTrumpPassAi,
         SwitchingCardWithMiddle,
         SelectingCardTrump,
+        SelectTrumpSuit,
         Game,
         Game_RoundStart,
         Game_AITurn,
@@ -179,6 +180,7 @@ module Controller {
         private currentRoundTurnNumber: number;
 
         private currentSetRoundNumber: number;
+        private setStart : number;
 
         private cardsInMiddleLogic: CardsInMiddleLogic;
 
@@ -199,6 +201,7 @@ module Controller {
             this.currentRoundTurnNumber = 0;
             this.currentSetRoundNumber = 0;
             this.cardsInMiddleLogic = new CardsInMiddleLogic(this);
+            this.setStart = 0;
             this.crossScore = 0;
             this.sideScore = 0;
             this.globalCrossScore = 0;
@@ -386,6 +389,16 @@ module Controller {
             this.state = GameState.Game_DetermineNextPlayerInRound;
         }
 
+        shouldPickUp(playerNum, playerToPickup) {
+            //TODO: lol. write this damn function, you lazy bum.
+            return false;
+        }
+
+        PickUpAI(playerNum) {
+            //TODO: write this function too.
+            // basically, add all dem actions.
+        }
+
         setActionForGameState() {
             switch(this.state) {
                 case GameState.Shuffle:
@@ -422,11 +435,18 @@ module Controller {
                     this.state = GameState.SelectingCardTrump;
                     break;
                 case GameState.SelectCardTrumpPickupSwitch:
-                    //create the sign
-                    this.actions.push(new Action("Show-SelectCardSwitch", -1, null, null, null));
-                    this.setTrumpSelector(this.cardInMiddleForTrump.cardSuit);
-                    // wait for user input
-                    this.state = GameState.SelectingCardTrumpPickupSwitch;
+                    // check it is the user's turn to pick up the middle card
+                    // SUPER IMPORTANT: If it is a user selecting PICK UP, but it is the AI's turn to pick it up, then AI needs to pick it up. 
+                    if (this.setStart == 0) {
+                        //create the sign
+                        this.actions.push(new Action("Show-SelectCardSwitch", -1, null, null, null));
+                        this.setTrumpSelector(this.cardInMiddleForTrump.cardSuit);
+                        // wait for user input
+                        this.state = GameState.SelectingCardTrumpPickupSwitch;
+                    } else {
+                        this.PickUpAI(this.setStart);
+                    }
+
                     break;
                 case GameState.SwitchingCardWithMiddle:
                     this.actions.push(new Action("Show-StartGame", -1, null, null, null));
@@ -435,6 +455,30 @@ module Controller {
                 case GameState.SelectCardTrumpPassAi:
                     //calculate AI work
                     // translate these into actions
+
+                    // for each AI starting position of the set -> user or start of the set
+                    //  calculate if he wants to pick up
+                    // function: shouldPickUp()
+                    //  add a pause and a message
+                    //  then either force the player to pick up
+                    //  or go to the next AI
+
+                    var incrementIfFirst = 0;
+                    if (this.setStart == 0) incrementIfFirst = 1;
+
+                    for (var i = 0; i < 4; i++) {
+                        var eltToCheck = (this.setStart + i + incrementIfFirst) % 4;
+                        if (eltToCheck == 0 || eltToCheck == this.setStart) {
+                            this.state = GameState.SelectTrumpSuit;
+                        } else {
+                            if (this.shouldPickUp(eltToCheck, this.setStart)) {
+                                this.state = GameState.SelectCardTrumpPickupSwitch;
+                            }
+                        }
+                    }
+                    break;
+                case GameState.SelectTrumpSuit:
+
                     break;
                 case GameState.Game:
                     this.state = GameState.Game_RoundStart;

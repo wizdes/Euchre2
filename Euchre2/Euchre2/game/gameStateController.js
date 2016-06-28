@@ -11,17 +11,18 @@ var Controller;
         GameState[GameState["SelectCardTrumpPassAi"] = 5] = "SelectCardTrumpPassAi";
         GameState[GameState["SwitchingCardWithMiddle"] = 6] = "SwitchingCardWithMiddle";
         GameState[GameState["SelectingCardTrump"] = 7] = "SelectingCardTrump";
-        GameState[GameState["Game"] = 8] = "Game";
-        GameState[GameState["Game_RoundStart"] = 9] = "Game_RoundStart";
-        GameState[GameState["Game_AITurn"] = 10] = "Game_AITurn";
-        GameState[GameState["Game_UserInputTurn"] = 11] = "Game_UserInputTurn";
-        GameState[GameState["Game_EndOfRound"] = 12] = "Game_EndOfRound";
-        GameState[GameState["Game_EndOfSet"] = 13] = "Game_EndOfSet";
-        GameState[GameState["Game_DetermineNextPlayerInRound"] = 14] = "Game_DetermineNextPlayerInRound";
+        GameState[GameState["SelectTrumpSuit"] = 8] = "SelectTrumpSuit";
+        GameState[GameState["Game"] = 9] = "Game";
+        GameState[GameState["Game_RoundStart"] = 10] = "Game_RoundStart";
+        GameState[GameState["Game_AITurn"] = 11] = "Game_AITurn";
+        GameState[GameState["Game_UserInputTurn"] = 12] = "Game_UserInputTurn";
+        GameState[GameState["Game_EndOfRound"] = 13] = "Game_EndOfRound";
+        GameState[GameState["Game_EndOfSet"] = 14] = "Game_EndOfSet";
+        GameState[GameState["Game_DetermineNextPlayerInRound"] = 15] = "Game_DetermineNextPlayerInRound";
         //unused game states
-        GameState[GameState["SelectingTrumpCardAi"] = 15] = "SelectingTrumpCardAi";
-        GameState[GameState["SelectTrumpUser"] = 16] = "SelectTrumpUser";
-        GameState[GameState["SelectTrumpAi"] = 17] = "SelectTrumpAi";
+        GameState[GameState["SelectingTrumpCardAi"] = 16] = "SelectingTrumpCardAi";
+        GameState[GameState["SelectTrumpUser"] = 17] = "SelectTrumpUser";
+        GameState[GameState["SelectTrumpAi"] = 18] = "SelectTrumpAi";
     })(Controller.GameState || (Controller.GameState = {}));
     var GameState = Controller.GameState;
     var Action = (function () {
@@ -151,6 +152,7 @@ var Controller;
             this.currentRoundTurnNumber = 0;
             this.currentSetRoundNumber = 0;
             this.cardsInMiddleLogic = new CardsInMiddleLogic(this);
+            this.setStart = 0;
             this.crossScore = 0;
             this.sideScore = 0;
             this.globalCrossScore = 0;
@@ -308,6 +310,14 @@ var Controller;
             this.currentRoundTurnNumber++;
             this.state = GameState.Game_DetermineNextPlayerInRound;
         };
+        GameStateController.prototype.shouldPickUp = function (playerNum, playerToPickup) {
+            //TODO: lol. write this damn function, you lazy bum.
+            return false;
+        };
+        GameStateController.prototype.PickUpAI = function (playerNum) {
+            //TODO: write this function too.
+            // basically, add all dem actions.
+        };
         GameStateController.prototype.setActionForGameState = function () {
             switch (this.state) {
                 case GameState.Shuffle:
@@ -341,11 +351,18 @@ var Controller;
                     this.state = GameState.SelectingCardTrump;
                     break;
                 case GameState.SelectCardTrumpPickupSwitch:
-                    //create the sign
-                    this.actions.push(new Action("Show-SelectCardSwitch", -1, null, null, null));
-                    this.setTrumpSelector(this.cardInMiddleForTrump.cardSuit);
-                    // wait for user input
-                    this.state = GameState.SelectingCardTrumpPickupSwitch;
+                    // check it is the user's turn to pick up the middle card
+                    // SUPER IMPORTANT: If it is a user selecting PICK UP, but it is the AI's turn to pick it up, then AI needs to pick it up. 
+                    if (this.setStart == 0) {
+                        //create the sign
+                        this.actions.push(new Action("Show-SelectCardSwitch", -1, null, null, null));
+                        this.setTrumpSelector(this.cardInMiddleForTrump.cardSuit);
+                        // wait for user input
+                        this.state = GameState.SelectingCardTrumpPickupSwitch;
+                    }
+                    else {
+                        this.PickUpAI(this.setStart);
+                    }
                     break;
                 case GameState.SwitchingCardWithMiddle:
                     this.actions.push(new Action("Show-StartGame", -1, null, null, null));
@@ -354,6 +371,28 @@ var Controller;
                 case GameState.SelectCardTrumpPassAi:
                     //calculate AI work
                     // translate these into actions
+                    // for each AI starting position of the set -> user or start of the set
+                    //  calculate if he wants to pick up
+                    // function: shouldPickUp()
+                    //  add a pause and a message
+                    //  then either force the player to pick up
+                    //  or go to the next AI
+                    var incrementIfFirst = 0;
+                    if (this.setStart == 0)
+                        incrementIfFirst = 1;
+                    for (var i = 0; i < 4; i++) {
+                        var eltToCheck = (this.setStart + i + incrementIfFirst) % 4;
+                        if (eltToCheck == 0 || eltToCheck == this.setStart) {
+                            this.state = GameState.SelectTrumpSuit;
+                        }
+                        else {
+                            if (this.shouldPickUp(eltToCheck, this.setStart)) {
+                                this.state = GameState.SelectCardTrumpPickupSwitch;
+                            }
+                        }
+                    }
+                    break;
+                case GameState.SelectTrumpSuit:
                     break;
                 case GameState.Game:
                     this.state = GameState.Game_RoundStart;
