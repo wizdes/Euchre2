@@ -402,7 +402,6 @@ module Controller {
         setActionForGameState() {
             switch(this.state) {
                 case GameState.Shuffle:
-                    // TODO: you will need to reset everything here
                     this.sideScore = 0;
                     this.crossScore = 0;
 

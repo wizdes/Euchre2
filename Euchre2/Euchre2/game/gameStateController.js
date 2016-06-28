@@ -321,7 +321,6 @@ var Controller;
         GameStateController.prototype.setActionForGameState = function () {
             switch (this.state) {
                 case GameState.Shuffle:
-                    // TODO: you will need to reset everything here
                     this.sideScore = 0;
                     this.crossScore = 0;
                     // shuffle the cards
