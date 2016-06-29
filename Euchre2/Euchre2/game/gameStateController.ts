@@ -12,6 +12,7 @@ module Controller {
         SwitchingCardWithMiddle,
         SelectingCardTrump,
         SelectTrumpSuit,
+        SelectingTrumpSuit,
         Game,
         Game_RoundStart,
         Game_AITurn,
@@ -24,6 +25,7 @@ module Controller {
         SelectingTrumpCardAi,
         SelectTrumpUser,
         SelectTrumpAi,
+        SelectTrumpSuitAi
     }
 
     export class Action {
@@ -399,6 +401,10 @@ module Controller {
             // basically, add all dem actions.
         }
 
+        PickTrumpAI(playerNum) {
+            
+        }
+
         setActionForGameState() {
             switch(this.state) {
                 case GameState.Shuffle:
@@ -431,6 +437,8 @@ module Controller {
                     var card = this.deck.getNextCard();
                     this.cardInMiddleForTrump = card;
                     this.actions.push(new Action("Move-Deck-Center", -1, card.cardValue, card.cardSuit, null));
+
+                    // TODO: this state is wrong if AI is the caller
                     this.state = GameState.SelectingCardTrump;
                     break;
                 case GameState.SelectCardTrumpPickupSwitch:
@@ -470,15 +478,55 @@ module Controller {
                         if (eltToCheck == 0 || eltToCheck == this.setStart) {
                             this.state = GameState.SelectTrumpSuit;
                         } else {
+                            var s = this.ShouldChooseTrump(eltToCheck, this.setStart);
+                            if (s != Model.Suit.None) {
+                                this.setTrumpSuitAddUiActions(s);
+                                this.state = GameState.Game;
+                            }
+                        }
+                    }
+                    break;
+                case GameState.SelectTrumpSuit:
+                    // display the icons
+                    // change to 'SelectingTrumpSuit'
+                    this.actions.push(new Action("Show-SelectTrump", -1, null, null, null));
+                    this.state = GameState.SelectingTrumpSuit;
+                    break;
+                case GameState.SelectTrumpSuitAi:
+                    //calculate AI work
+                    // translate these into actions
+
+                    // for each AI starting position of the set -> user or start of the set
+                    //  calculate if he wants to pick up
+                    // function: shouldPickUp()
+                    //  add a pause and a message
+                    //  then either force the player to pick up
+                    //  or go to the next AI
+
+                    var incrementIfFirst = 0;
+                    if (this.setStart == 0) incrementIfFirst = 1;
+
+                    for (var i = 0; i < 4; i++) {
+                        var eltToCheck = (this.setStart + i + incrementIfFirst) % 4;
+                        if (eltToCheck == 0 || eltToCheck == this.setStart) {
+                            this.state = GameState.SelectTrumpSuit;
+                        } else {
                             if (this.shouldPickUp(eltToCheck, this.setStart)) {
                                 this.state = GameState.SelectCardTrumpPickupSwitch;
                             }
                         }
                     }
                     break;
-                case GameState.SelectTrumpSuit:
-
+                case GameState.SelectingTrumpSuit:
+                    // display the icons
+                    // change to 'SelectingTrumpSuit'
+                    this.actions.push(new Action("Show-SelectCardTrump", -1, null, null, null));
+                    var card = this.deck.getNextCard();
+                    this.cardInMiddleForTrump = card;
+                    this.actions.push(new Action("Move-Deck-Center", -1, card.cardValue, card.cardSuit, null));
+                    this.state = GameState.SelectingCardTrump;
                     break;
+
                 case GameState.Game:
                     this.state = GameState.Game_RoundStart;
                     break;
@@ -568,5 +616,9 @@ module Controller {
                     return;
             }    
         }
+
+        ShouldChooseTrump(eltToCheck: number, start: number) { throw new Error("Not implemented"); }
+
+        setTrumpSuitAddUiActions(s: void) { throw new Error("Not implemented"); }
     }
 }

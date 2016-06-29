@@ -12,17 +12,19 @@ var Controller;
         GameState[GameState["SwitchingCardWithMiddle"] = 6] = "SwitchingCardWithMiddle";
         GameState[GameState["SelectingCardTrump"] = 7] = "SelectingCardTrump";
         GameState[GameState["SelectTrumpSuit"] = 8] = "SelectTrumpSuit";
-        GameState[GameState["Game"] = 9] = "Game";
-        GameState[GameState["Game_RoundStart"] = 10] = "Game_RoundStart";
-        GameState[GameState["Game_AITurn"] = 11] = "Game_AITurn";
-        GameState[GameState["Game_UserInputTurn"] = 12] = "Game_UserInputTurn";
-        GameState[GameState["Game_EndOfRound"] = 13] = "Game_EndOfRound";
-        GameState[GameState["Game_EndOfSet"] = 14] = "Game_EndOfSet";
-        GameState[GameState["Game_DetermineNextPlayerInRound"] = 15] = "Game_DetermineNextPlayerInRound";
+        GameState[GameState["SelectingTrumpSuit"] = 9] = "SelectingTrumpSuit";
+        GameState[GameState["Game"] = 10] = "Game";
+        GameState[GameState["Game_RoundStart"] = 11] = "Game_RoundStart";
+        GameState[GameState["Game_AITurn"] = 12] = "Game_AITurn";
+        GameState[GameState["Game_UserInputTurn"] = 13] = "Game_UserInputTurn";
+        GameState[GameState["Game_EndOfRound"] = 14] = "Game_EndOfRound";
+        GameState[GameState["Game_EndOfSet"] = 15] = "Game_EndOfSet";
+        GameState[GameState["Game_DetermineNextPlayerInRound"] = 16] = "Game_DetermineNextPlayerInRound";
         //unused game states
-        GameState[GameState["SelectingTrumpCardAi"] = 16] = "SelectingTrumpCardAi";
-        GameState[GameState["SelectTrumpUser"] = 17] = "SelectTrumpUser";
-        GameState[GameState["SelectTrumpAi"] = 18] = "SelectTrumpAi";
+        GameState[GameState["SelectingTrumpCardAi"] = 17] = "SelectingTrumpCardAi";
+        GameState[GameState["SelectTrumpUser"] = 18] = "SelectTrumpUser";
+        GameState[GameState["SelectTrumpAi"] = 19] = "SelectTrumpAi";
+        GameState[GameState["SelectTrumpSuitAi"] = 20] = "SelectTrumpSuitAi";
     })(Controller.GameState || (Controller.GameState = {}));
     var GameState = Controller.GameState;
     var Action = (function () {
@@ -318,6 +320,8 @@ var Controller;
             //TODO: write this function too.
             // basically, add all dem actions.
         };
+        GameStateController.prototype.PickTrumpAI = function (playerNum) {
+        };
         GameStateController.prototype.setActionForGameState = function () {
             switch (this.state) {
                 case GameState.Shuffle:
@@ -347,6 +351,7 @@ var Controller;
                     var card = this.deck.getNextCard();
                     this.cardInMiddleForTrump = card;
                     this.actions.push(new Action("Move-Deck-Center", -1, card.cardValue, card.cardSuit, null));
+                    // TODO: this state is wrong if AI is the caller
                     this.state = GameState.SelectingCardTrump;
                     break;
                 case GameState.SelectCardTrumpPickupSwitch:
@@ -385,13 +390,52 @@ var Controller;
                             this.state = GameState.SelectTrumpSuit;
                         }
                         else {
+                            var s = this.ShouldChooseTrump(eltToCheck, this.setStart);
+                            if (s != Model.Suit.None) {
+                                this.setTrumpSuitAddUiActions(s);
+                                this.state = GameState.Game;
+                            }
+                        }
+                    }
+                    break;
+                case GameState.SelectTrumpSuit:
+                    // display the icons
+                    // change to 'SelectingTrumpSuit'
+                    this.actions.push(new Action("Show-SelectTrump", -1, null, null, null));
+                    this.state = GameState.SelectingTrumpSuit;
+                    break;
+                case GameState.SelectTrumpSuitAi:
+                    //calculate AI work
+                    // translate these into actions
+                    // for each AI starting position of the set -> user or start of the set
+                    //  calculate if he wants to pick up
+                    // function: shouldPickUp()
+                    //  add a pause and a message
+                    //  then either force the player to pick up
+                    //  or go to the next AI
+                    var incrementIfFirst = 0;
+                    if (this.setStart == 0)
+                        incrementIfFirst = 1;
+                    for (var i = 0; i < 4; i++) {
+                        var eltToCheck = (this.setStart + i + incrementIfFirst) % 4;
+                        if (eltToCheck == 0 || eltToCheck == this.setStart) {
+                            this.state = GameState.SelectTrumpSuit;
+                        }
+                        else {
                             if (this.shouldPickUp(eltToCheck, this.setStart)) {
                                 this.state = GameState.SelectCardTrumpPickupSwitch;
                             }
                         }
                     }
                     break;
-                case GameState.SelectTrumpSuit:
+                case GameState.SelectingTrumpSuit:
+                    // display the icons
+                    // change to 'SelectingTrumpSuit'
+                    this.actions.push(new Action("Show-SelectCardTrump", -1, null, null, null));
+                    var card = this.deck.getNextCard();
+                    this.cardInMiddleForTrump = card;
+                    this.actions.push(new Action("Move-Deck-Center", -1, card.cardValue, card.cardSuit, null));
+                    this.state = GameState.SelectingCardTrump;
                     break;
                 case GameState.Game:
                     this.state = GameState.Game_RoundStart;
@@ -475,6 +519,8 @@ var Controller;
                     return;
             }
         };
+        GameStateController.prototype.ShouldChooseTrump = function (eltToCheck, start) { throw new Error("Not implemented"); };
+        GameStateController.prototype.setTrumpSuitAddUiActions = function (s) { throw new Error("Not implemented"); };
         return GameStateController;
     }());
     Controller.GameStateController = GameStateController;
