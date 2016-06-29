@@ -321,6 +321,7 @@ var Controller;
             // basically, add all dem actions.
         };
         GameStateController.prototype.PickTrumpAI = function (playerNum) {
+            //TODO: write this function
         };
         GameStateController.prototype.setActionForGameState = function () {
             switch (this.state) {
@@ -390,10 +391,8 @@ var Controller;
                             this.state = GameState.SelectTrumpSuit;
                         }
                         else {
-                            var s = this.ShouldChooseTrump(eltToCheck, this.setStart);
-                            if (s != Model.Suit.None) {
-                                this.setTrumpSuitAddUiActions(s);
-                                this.state = GameState.Game;
+                            if (this.shouldPickUp(eltToCheck, this.setStart)) {
+                                this.state = GameState.SelectCardTrumpPickupSwitch;
                             }
                         }
                     }
@@ -422,8 +421,10 @@ var Controller;
                             this.state = GameState.SelectTrumpSuit;
                         }
                         else {
-                            if (this.shouldPickUp(eltToCheck, this.setStart)) {
-                                this.state = GameState.SelectCardTrumpPickupSwitch;
+                            var s = this.ShouldChooseTrump(eltToCheck, this.setStart);
+                            if (s != Model.Suit.None) {
+                                this.setTrumpSuitAddUiActions(s);
+                                this.state = GameState.Game;
                             }
                         }
                     }
@@ -519,7 +520,9 @@ var Controller;
                     return;
             }
         };
-        GameStateController.prototype.ShouldChooseTrump = function (eltToCheck, start) { throw new Error("Not implemented"); };
+        // TODO: add this function
+        GameStateController.prototype.ShouldChooseTrump = function (eltToCheck, start) { return Model.Suit.None; };
+        // TODO: add this function
         GameStateController.prototype.setTrumpSuitAddUiActions = function (s) { throw new Error("Not implemented"); };
         return GameStateController;
     }());

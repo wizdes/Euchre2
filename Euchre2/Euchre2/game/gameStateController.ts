@@ -402,7 +402,7 @@ module Controller {
         }
 
         PickTrumpAI(playerNum) {
-            
+            //TODO: write this function
         }
 
         setActionForGameState() {
@@ -478,10 +478,8 @@ module Controller {
                         if (eltToCheck == 0 || eltToCheck == this.setStart) {
                             this.state = GameState.SelectTrumpSuit;
                         } else {
-                            var s = this.ShouldChooseTrump(eltToCheck, this.setStart);
-                            if (s != Model.Suit.None) {
-                                this.setTrumpSuitAddUiActions(s);
-                                this.state = GameState.Game;
+                            if (this.shouldPickUp(eltToCheck, this.setStart)) {
+                                this.state = GameState.SelectCardTrumpPickupSwitch;
                             }
                         }
                     }
@@ -511,8 +509,10 @@ module Controller {
                         if (eltToCheck == 0 || eltToCheck == this.setStart) {
                             this.state = GameState.SelectTrumpSuit;
                         } else {
-                            if (this.shouldPickUp(eltToCheck, this.setStart)) {
-                                this.state = GameState.SelectCardTrumpPickupSwitch;
+                            var s = this.ShouldChooseTrump(eltToCheck, this.setStart);
+                            if (s != Model.Suit.None) {
+                                this.setTrumpSuitAddUiActions(s);
+                                this.state = GameState.Game;
                             }
                         }
                     }
@@ -617,8 +617,10 @@ module Controller {
             }    
         }
 
-        ShouldChooseTrump(eltToCheck: number, start: number) { throw new Error("Not implemented"); }
+        // TODO: add this function
+        ShouldChooseTrump(eltToCheck: number, start: number) { return Model.Suit.None; }
 
-        setTrumpSuitAddUiActions(s: void) { throw new Error("Not implemented"); }
+        // TODO: add this function
+        setTrumpSuitAddUiActions(s: Model.Suit) { throw new Error("Not implemented"); }
     }
 }
