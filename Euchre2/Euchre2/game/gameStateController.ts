@@ -221,6 +221,21 @@ module Controller {
             this.cardsInMiddleLogic.reset(this.trumpSelector);
         }
 
+        suitToSuitString(suit) {
+            switch (suit) {
+                case Model.Suit.Hearts:
+                    return "Hearts";
+                case Model.Suit.Diamonds:
+                    return "Diamonds";
+                case Model.Suit.Clubs:
+                    return "Clubs";
+                case Model.Suit.Spades:
+                    return "Spades";
+                default:
+                    return "None";
+            }
+        }
+
         suitStringToSuit(suit) {
             switch(suit) {
                 case "Hearts":
@@ -495,11 +510,17 @@ module Controller {
 
                     for (var i = 0; i < 4; i++) {
                         var eltToCheck = (this.setStart + i + incrementIfFirst) % 4;
-                        if (eltToCheck == 0 || eltToCheck == this.setStart) {
+                        if (eltToCheck == 0) {
                             this.state = GameState.SelectTrumpSuit;
+                            break;
+                        }
+                        else if (eltToCheck == this.setStart) {
+                            this.state = GameState.SelectTrumpSuit;
+                            break;
                         } else {
                             if (this.shouldPickUp(eltToCheck, this.setStart)) {
                                 this.state = GameState.SelectCardTrumpPickupSwitch;
+                                break;
                             }
                         }
                     }
@@ -507,6 +528,7 @@ module Controller {
                 case GameState.SelectTrumpSuit:
                     // change to 'SelectingTrumpSuit'
                     this.actions.push(new Action("Show-SelectTrump", -1, null, null, null));
+                    this.actions.push(new Action("Remove-Center", -1, this.cardInMiddleForTrump.cardValue, this.cardInMiddleForTrump.cardSuit, null));
                     this.state = GameState.SelectingTrumpSuit;
                     break;
                 case GameState.SelectTrumpSuitAi:
@@ -527,23 +549,16 @@ module Controller {
                         var eltToCheck = (this.setStart + i + incrementIfFirst) % 4;
                         if (eltToCheck == 0) {
                             this.state = GameState.SelectTrumpSuit;
+                            break;
                         } else {
                             var s = this.ShouldChooseTrump(eltToCheck, this.setStart);
                             if (s != Model.Suit.None) {
-                                this.setTrumpSuitAddUiActions(s.toString());
+                                this.setTrumpSuitAddUiActions(this.suitToSuitString(s));
                                 this.state = GameState.Game;
+                                break;
                             }
                         }
                     }
-                    break;
-                case GameState.SelectingTrumpSuit:
-                    // display the icons
-                    // change to 'SelectingTrumpSuit'
-                    this.actions.push(new Action("Show-SelectCardTrump", -1, null, null, null));
-                    var card = this.deck.getNextCard();
-                    this.cardInMiddleForTrump = card;
-                    this.actions.push(new Action("Move-Deck-Center", -1, card.cardValue, card.cardSuit, null));
-                    this.state = GameState.SelectingCardTrump;
                     break;
 
                 case GameState.Game:
@@ -660,13 +675,13 @@ module Controller {
             }
 
             for (var i = 0; i < 4; i++) {
-                if (typeof map[keys[i]] === "undefined" && map[keys[i]] > max) {
+                if (typeof map[keys[i]] !== "undefined" && map[keys[i]] > max) {
                     max = map[keys[i]];
                     index = i;
                 }
             }
 
-            if (max > 3 || forced) {
+            if (max >= 3 || forced) {
                 return this.suitStringToSuit(keys[index]);
             }
 
@@ -675,7 +690,9 @@ module Controller {
 
         // TODO: add this function
         setTrumpSuitAddUiActions(s: string) {
-            this.setTrumpSelector(s.toString());
+            this.state = GameState.Game;
+            this.actions.push(new Action("Show-StartGame", -1, null, null, null));
+            this.setTrumpSelector(s);
         }
     }
 }

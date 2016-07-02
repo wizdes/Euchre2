@@ -58,19 +58,19 @@
         }
 
         ShowSuitOptions() {
-            this.Spades = this.currentGame.add.text(300, 1000, 'Choose', { font: '30px dimboregular', fill: '#000' });
+            this.Spades = this.currentGame.add.text(300, 500, 'Spades', { font: '30px dimboregular', fill: '#000' });
             this.Spades.inputEnabled = true;
             this.Spades.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseSpades", action: "ChooseSpades", game: this.currentGame });
 
-            this.Hearts = this.currentGame.add.text(300, 1000, 'Choose', { font: '30px dimboregular', fill: '#000' });
+            this.Hearts = this.currentGame.add.text(300, 600, 'Hearts', { font: '30px dimboregular', fill: '#000' });
             this.Hearts.inputEnabled = true;
             this.Hearts.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseHearts", action: "ChooseHearts", game: this.currentGame });
 
-            this.Diamonds = this.currentGame.add.text(300, 1000, 'Choose', { font: '30px dimboregular', fill: '#000' });
+            this.Diamonds = this.currentGame.add.text(300, 700, 'Diamonds', { font: '30px dimboregular', fill: '#000' });
             this.Diamonds.inputEnabled = true;
             this.Diamonds.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseDiamonds", action: "ChooseDiamonds", game: this.currentGame });
 
-            this.Clubs = this.currentGame.add.text(300, 1000, 'Choose', { font: '30px dimboregular', fill: '#000' });
+            this.Clubs = this.currentGame.add.text(300, 800, 'Clubs', { font: '30px dimboregular', fill: '#000' });
             this.Clubs.inputEnabled = true;
             this.Clubs.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseClubs", action: "ChooseClubs", game: this.currentGame });
 
@@ -347,7 +347,10 @@
                 }
             }
             else if (actionElements[0] == "Remove") {
-                if (actionElements[1] == "Card" && actionElements[2].indexOf("Player") != -1) {
+                if (actionElements[1] == "Center") {
+                    this.drawAtNoInit(action.cardSuit, action.cardValue, -300, -300, false);
+                }
+                else if (actionElements[1] == "Card" && actionElements[2].indexOf("Player") != -1) {
                     var playerNum = Number(actionElements[2].substr(actionElements[2].length - 1)) - 1;
                     this.players[playerNum].removeCard();
                     this.drawAtNoInit(action.cardSuit, action.cardValue, -1000, -1000, false);
