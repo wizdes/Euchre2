@@ -44,6 +44,13 @@ module Namespace.State {
             if (this.action == "Pick up") {
                 this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPickupSwitch);
             }
+            else if (this.action == "Choose" || this.action == "Pass Choose") {
+                this.game.gameStateController.setGameState(Controller.GameState.SelectTrumpSuitAi);
+            }
+            else if (this.action.indexOf("Choose") > -1) {
+                var suit = this.action.replace("Choose", "");
+                this.game.gameStateController.setTrumpSuitAddUiActions(suit);
+            }
             else if (this.action == "Pass") {
                 this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPassAi);                
             }

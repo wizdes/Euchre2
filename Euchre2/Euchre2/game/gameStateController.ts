@@ -505,8 +505,6 @@ module Controller {
                     }
                     break;
                 case GameState.SelectTrumpSuit:
-                    // TODO: display the icons
-                    // TODO: add the user controls for selecting a trump button
                     // change to 'SelectingTrumpSuit'
                     this.actions.push(new Action("Show-SelectTrump", -1, null, null, null));
                     this.state = GameState.SelectingTrumpSuit;
@@ -532,7 +530,7 @@ module Controller {
                         } else {
                             var s = this.ShouldChooseTrump(eltToCheck, this.setStart);
                             if (s != Model.Suit.None) {
-                                this.setTrumpSuitAddUiActions(s);
+                                this.setTrumpSuitAddUiActions(s.toString());
                                 this.state = GameState.Game;
                             }
                         }
@@ -676,8 +674,8 @@ module Controller {
         }
 
         // TODO: add this function
-        setTrumpSuitAddUiActions(s: Model.Suit) {
-            throw new Error("Not implemented");
+        setTrumpSuitAddUiActions(s: string) {
+            this.setTrumpSelector(s.toString());
         }
     }
 }

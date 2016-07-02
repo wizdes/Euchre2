@@ -12,6 +12,16 @@ var ScreenView;
                 this.Pickup.destroy();
             if (this.Pass != null)
                 this.Pass.destroy();
+            if (this.Choose != null)
+                this.Choose.destroy();
+            if (this.Spades != null)
+                this.Spades.destroy();
+            if (this.Hearts != null)
+                this.Hearts.destroy();
+            if (this.Diamonds != null)
+                this.Diamonds.destroy();
+            if (this.Clubs != null)
+                this.Clubs.destroy();
         };
         SignButtonView.prototype.ShowActionTitle = function (text) {
             this.ActionImgObj = this.PickupOrPass = this.currentGame.add.text(300, 400, text, { font: '30px dimboregular', fill: '#000' });
@@ -23,6 +33,28 @@ var ScreenView;
             this.Pass = this.currentGame.add.text(600, 1000, 'Pass', { font: '30px dimboregular', fill: '#000' });
             this.Pass.inputEnabled = true;
             this.Pass.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Pass", action: "Pass", game: this.currentGame });
+        };
+        SignButtonView.prototype.ShowChooseOptions = function () {
+            this.Choose = this.currentGame.add.text(300, 1000, 'Choose', { font: '30px dimboregular', fill: '#000' });
+            this.Choose.inputEnabled = true;
+            this.Choose.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Choose", action: "Choose", game: this.currentGame });
+            this.Pass = this.currentGame.add.text(600, 1000, 'Pass', { font: '30px dimboregular', fill: '#000' });
+            this.Pass.inputEnabled = true;
+            this.Pass.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Pass Choose", action: "Pass Choose", game: this.currentGame });
+        };
+        SignButtonView.prototype.ShowSuitOptions = function () {
+            this.Spades = this.currentGame.add.text(300, 1000, 'Choose', { font: '30px dimboregular', fill: '#000' });
+            this.Spades.inputEnabled = true;
+            this.Spades.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseSpades", action: "ChooseSpades", game: this.currentGame });
+            this.Hearts = this.currentGame.add.text(300, 1000, 'Choose', { font: '30px dimboregular', fill: '#000' });
+            this.Hearts.inputEnabled = true;
+            this.Hearts.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseHearts", action: "ChooseHearts", game: this.currentGame });
+            this.Diamonds = this.currentGame.add.text(300, 1000, 'Choose', { font: '30px dimboregular', fill: '#000' });
+            this.Diamonds.inputEnabled = true;
+            this.Diamonds.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseDiamonds", action: "ChooseDiamonds", game: this.currentGame });
+            this.Clubs = this.currentGame.add.text(300, 1000, 'Choose', { font: '30px dimboregular', fill: '#000' });
+            this.Clubs.inputEnabled = true;
+            this.Clubs.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseClubs", action: "ChooseClubs", game: this.currentGame });
         };
         return SignButtonView;
     }());
@@ -229,6 +261,12 @@ var ScreenView;
                     this.signView.Clear();
                     this.signView.ShowActionTitle('Pick up card');
                     this.signView.ShowPickupOrPass();
+                }
+                else if (actionElements[1] == "SelectTrump") {
+                    this.signView.Clear();
+                    this.signView.ShowActionTitle('Pick suit?');
+                    this.signView.ShowChooseOptions();
+                    this.signView.ShowSuitOptions();
                 }
                 else if (actionElements[1] == "SelectCardSwitch") {
                     this.signView.Clear();
