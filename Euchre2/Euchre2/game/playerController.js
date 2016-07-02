@@ -23,6 +23,15 @@ var Controller;
                 this.cards.splice(indexToRemove, 1);
             }
         };
+        PlayerController.prototype.numCardsOfSuit = function (potentialSuit) {
+            var numElt = 0;
+            for (var i = 0; i < this.cards.length; i++) {
+                if (this.cards[i].cardSuit == potentialSuit) {
+                    numElt++;
+                }
+            }
+            return numElt;
+        };
         return PlayerController;
     }());
     Controller.PlayerController = PlayerController;

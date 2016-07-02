@@ -392,17 +392,37 @@ module Controller {
         }
 
         shouldPickUp(playerNum, playerToPickup) {
-            //TODO: lol. write this damn function, you lazy bum.
+            var potentialSuit = this.cardInMiddleForTrump.cardSuit;
+            var numCardsSuit = 2;
+            if (playerNum == playerToPickup) numCardsSuit = 3;
+            if (this.players[playerNum].numCardsOfSuit(potentialSuit) > numCardsSuit) {
+                return true;
+            }
             return false;
         }
 
         PickUpAI(playerNum) {
-            //TODO: write this function too.
-            // basically, add all dem actions.
-        }
+            var suit = this.players[playerNum].cards[0].cardSuit;
+            var value = this.players[playerNum].cards[0].cardSuit;
 
-        PickTrumpAI(playerNum) {
-            //TODO: write this function
+            for (var i = 0; i < this.players[playerNum].cards.length; i++) {
+                if (this.players[playerNum].cards[i].cardSuit != this.cardInMiddleForTrump.cardSuit) {
+                    suit = this.players[playerNum].cards[i].cardSuit;
+                    value = this.players[playerNum].cards[i].cardValue;
+                }   
+            }
+
+            //TODO: write this function too.
+            this.players[playerNum].removeCard(new Model.Card(suit, value));
+            this.actions.push(new Action("Remove-Card-Player" + playerNum, -1, value, suit, null));
+
+            for (var i = 0; i < this.players[playerNum].cards.length; i++) {
+                this.actions.push(new Action("Sort-Hand-Player" + playerNum + "-" + i, -1, this.players[playerNum].cards[i].cardValue, this.players[playerNum].cards[i].cardSuit, null));
+            }
+
+            this.players[playerNum].addCard(this.cardInMiddleForTrump);
+            this.actions.push(new Action("Move-Middle-Player" + playerNum, -1, this.cardInMiddleForTrump.cardValue, this.cardInMiddleForTrump.cardSuit, null));
+            this.cardInMiddleForTrump = null;
         }
 
         setActionForGameState() {
@@ -485,7 +505,8 @@ module Controller {
                     }
                     break;
                 case GameState.SelectTrumpSuit:
-                    // display the icons
+                    // TODO: display the icons
+                    // TODO: add the user controls for selecting a trump button
                     // change to 'SelectingTrumpSuit'
                     this.actions.push(new Action("Show-SelectTrump", -1, null, null, null));
                     this.state = GameState.SelectingTrumpSuit;
@@ -506,7 +527,7 @@ module Controller {
 
                     for (var i = 0; i < 4; i++) {
                         var eltToCheck = (this.setStart + i + incrementIfFirst) % 4;
-                        if (eltToCheck == 0 || eltToCheck == this.setStart) {
+                        if (eltToCheck == 0) {
                             this.state = GameState.SelectTrumpSuit;
                         } else {
                             var s = this.ShouldChooseTrump(eltToCheck, this.setStart);
@@ -618,9 +639,45 @@ module Controller {
         }
 
         // TODO: add this function
-        ShouldChooseTrump(eltToCheck: number, start: number) { return Model.Suit.None; }
+        ShouldChooseTrump(eltToCheck: number, start: number) {
+            var forced = false;
+            var max = -1;
+            var index = 0;
+            var keys = ["Hearts", "Diamonds", "Spades", "Clubs"];
+
+            if (start == eltToCheck) {
+                forced = true;
+            } else {
+
+            }
+
+            var map = {};
+            for (var i = 0; i < this.players[eltToCheck].cards.length; i++) {
+                var s = this.players[eltToCheck].cards[i].cardSuit;
+                if (typeof map[s] === "undefined") {
+                    map[s] = 1;
+                } else {
+                    map[s] = map[s] + 1;
+                }
+            }
+
+            for (var i = 0; i < 4; i++) {
+                if (typeof map[keys[i]] === "undefined" && map[keys[i]] > max) {
+                    max = map[keys[i]];
+                    index = i;
+                }
+            }
+
+            if (max > 3 || forced) {
+                return this.suitStringToSuit(keys[index]);
+            }
+
+            return Model.Suit.None;
+        }
 
         // TODO: add this function
-        setTrumpSuitAddUiActions(s: Model.Suit) { throw new Error("Not implemented"); }
+        setTrumpSuitAddUiActions(s: Model.Suit) {
+            throw new Error("Not implemented");
+        }
     }
 }

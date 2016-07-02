@@ -29,5 +29,15 @@ module Controller {
             }
         }
 
+        numCardsOfSuit(potentialSuit: string) {
+            var numElt = 0;
+            for (var i = 0; i < this.cards.length; i++) {
+                if (this.cards[i].cardSuit == potentialSuit) {
+                    numElt++;
+                }
+            }
+
+            return numElt;
+        }
     }
 }
