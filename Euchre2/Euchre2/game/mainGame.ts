@@ -52,7 +52,7 @@ module Namespace.State {
                 this.game.gameStateController.setTrumpSuitAddUiActions(suit);
             }
             else if (this.action == "Pass") {
-                this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPassAi);                
+                this.game.gameStateController.setGameState(Controller.GameState.SelectTrumpSuitPrep);                
             }
             else if (this.action == "cardTouch") {
                 if (this.game.gameStateController.state == Controller.GameState.SelectingCardTrumpPickupSwitch) {

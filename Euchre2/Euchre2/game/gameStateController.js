@@ -25,6 +25,7 @@ var Controller;
         GameState[GameState["SelectTrumpUser"] = 18] = "SelectTrumpUser";
         GameState[GameState["SelectTrumpAi"] = 19] = "SelectTrumpAi";
         GameState[GameState["SelectTrumpSuitAi"] = 20] = "SelectTrumpSuitAi";
+        GameState[GameState["SelectTrumpSuitPrep"] = 21] = "SelectTrumpSuitPrep";
     })(Controller.GameState || (Controller.GameState = {}));
     var GameState = Controller.GameState;
     var Action = (function () {
@@ -159,6 +160,7 @@ var Controller;
             this.sideScore = 0;
             this.globalCrossScore = 0;
             this.globalSideScore = 0;
+            this.userInput = false;
             for (var i = 0; i < 4; i++)
                 this.players.push(new Controller.PlayerController());
         }
@@ -228,6 +230,7 @@ var Controller;
         };
         GameStateController.prototype.PlayCard = function (player, value, suit) {
             var strictAvailableCardsToSelect = new Array();
+            var secondarySuitCardList = new Array();
             if (this.currentRoundTurnNumber != 0) {
                 // if you're the first, fuck it. just put them all in the damn list.
                 // generate this list by getting the trump cards and the cards that follow the thing
@@ -239,6 +242,9 @@ var Controller;
                         this.secondarySelector == Model.Suit.None ||
                         this.isTrumpCard(suitToCheck, valueToCheck)) {
                         strictAvailableCardsToSelect.push(i);
+                        if (this.secondarySelector == this.suitStringToSuit(suitToCheck)) {
+                            secondarySuitCardList.push(i);
+                        }
                     }
                 }
             }
@@ -254,10 +260,15 @@ var Controller;
                 //  else, is secondary suit played? 
                 // it is OK to play
                 if (this.secondarySelector != this.suitStringToSuit(suit) &&
-                    this.secondarySelector != Model.Suit.None &&
-                    !this.isTrumpCard(suit, value) &&
-                    strictAvailableCardsToSelect.length > 0) {
-                    return;
+                    this.secondarySelector != Model.Suit.None) {
+                    if (this.isTrumpCard(suit, value)) {
+                    }
+                    else if (secondarySuitCardList.length > 0) {
+                        // this means you have a card with that suit
+                        // BUT, you chose to not select it
+                        // go away
+                        return;
+                    }
                 }
             }
             this.cardsInMiddleLogic.addCard(player, new Model.Card(suit, value), this.currentRoundTurnNumber == 0);
@@ -328,31 +339,32 @@ var Controller;
         };
         GameStateController.prototype.shouldPickUp = function (playerNum, playerToPickup) {
             var potentialSuit = this.cardInMiddleForTrump.cardSuit;
-            var numCardsSuit = 2;
+            var numCardsSuit = 3;
             if (playerNum == playerToPickup)
-                numCardsSuit = 3;
-            if (this.players[playerNum].numCardsOfSuit(potentialSuit) > numCardsSuit) {
+                numCardsSuit = 2;
+            if (this.players[playerNum].numCardsOfSuit(potentialSuit) >= numCardsSuit) {
                 return true;
             }
             return false;
         };
         GameStateController.prototype.PickUpAI = function (playerNum) {
             var suit = this.players[playerNum].cards[0].cardSuit;
-            var value = this.players[playerNum].cards[0].cardSuit;
+            var value = this.players[playerNum].cards[0].cardValue;
             for (var i = 0; i < this.players[playerNum].cards.length; i++) {
+                // TODO: trump check here is required
                 if (this.players[playerNum].cards[i].cardSuit != this.cardInMiddleForTrump.cardSuit) {
                     suit = this.players[playerNum].cards[i].cardSuit;
                     value = this.players[playerNum].cards[i].cardValue;
                 }
             }
-            //TODO: write this function too.
             this.players[playerNum].removeCard(new Model.Card(suit, value));
-            this.actions.push(new Action("Remove-Card-Player" + playerNum, -1, value, suit, null));
+            this.actions.push(new Action("Remove-Card-Player" + (playerNum + 1), -1, value, suit, null));
             for (var i = 0; i < this.players[playerNum].cards.length; i++) {
-                this.actions.push(new Action("Sort-Hand-Player" + playerNum + "-" + i, -1, this.players[playerNum].cards[i].cardValue, this.players[playerNum].cards[i].cardSuit, null));
+                this.actions.push(new Action("Sort-Hand-Player" + (playerNum + 1) + "-" + i, -1, this.players[playerNum].cards[i].cardValue, this.players[playerNum].cards[i].cardSuit, null));
             }
             this.players[playerNum].addCard(this.cardInMiddleForTrump);
-            this.actions.push(new Action("Move-Middle-Player" + playerNum, -1, this.cardInMiddleForTrump.cardValue, this.cardInMiddleForTrump.cardSuit, null));
+            this.actions.push(new Action("Move-Middle-Player" + (playerNum + 1), -1, this.cardInMiddleForTrump.cardValue, this.cardInMiddleForTrump.cardSuit, null));
+            this.setTrumpSuitAddUiActions(this.cardInMiddleForTrump.cardSuit);
             this.cardInMiddleForTrump = null;
         };
         GameStateController.prototype.setActionForGameState = function () {
@@ -380,12 +392,19 @@ var Controller;
                     this.state = GameState.SelectCardTrump;
                     break;
                 case GameState.SelectCardTrump:
+                    this.userInput = false;
                     this.actions.push(new Action("Show-SelectCardTrump", -1, null, null, null));
                     var card = this.deck.getNextCard();
                     this.cardInMiddleForTrump = card;
                     this.actions.push(new Action("Move-Deck-Center", -1, card.cardValue, card.cardSuit, null));
                     // TODO: this state is wrong if AI is the caller
-                    this.state = GameState.SelectingCardTrump;
+                    if (this.setStart == 0) {
+                        this.state = GameState.SelectingCardTrump;
+                        this.userInput = true;
+                    }
+                    else {
+                        this.state = GameState.SelectCardTrumpPassAi;
+                    }
                     break;
                 case GameState.SelectCardTrumpPickupSwitch:
                     // check it is the user's turn to pick up the middle card
@@ -399,6 +418,7 @@ var Controller;
                     }
                     else {
                         this.PickUpAI(this.setStart);
+                        this.state = GameState.Game;
                     }
                     break;
                 case GameState.SwitchingCardWithMiddle:
@@ -419,12 +439,14 @@ var Controller;
                         incrementIfFirst = 1;
                     for (var i = 0; i < 4; i++) {
                         var eltToCheck = (this.setStart + i + incrementIfFirst) % 4;
-                        if (eltToCheck == 0) {
-                            this.state = GameState.SelectTrumpSuit;
+                        if (eltToCheck == 0 && this.userInput != true) {
+                            this.userInput = true;
+                            this.state = GameState.SelectingCardTrump;
                             break;
                         }
-                        else if (eltToCheck == this.setStart) {
-                            this.state = GameState.SelectTrumpSuit;
+                        else if (eltToCheck == this.setStart && this.userInput == true) {
+                            this.userInput = false;
+                            this.state = GameState.SelectTrumpSuitPrep;
                             break;
                         }
                         else {
@@ -438,8 +460,22 @@ var Controller;
                 case GameState.SelectTrumpSuit:
                     // change to 'SelectingTrumpSuit'
                     this.actions.push(new Action("Show-SelectTrump", -1, null, null, null));
+                    // TODO: this state is wrong if AI is the caller
+                    if (this.setStart == 0) {
+                        if (this.userInput == true) {
+                        }
+                        this.state = GameState.SelectingTrumpSuit;
+                        this.userInput = true;
+                    }
+                    else {
+                        this.state = GameState.SelectTrumpSuitAi;
+                    }
+                    break;
+                case GameState.SelectTrumpSuitPrep:
+                    this.userInput = false;
+                    this.actions.push(new Action("Show-SelectTrump", -1, null, null, null));
                     this.actions.push(new Action("Remove-Center", -1, this.cardInMiddleForTrump.cardValue, this.cardInMiddleForTrump.cardSuit, null));
-                    this.state = GameState.SelectingTrumpSuit;
+                    this.state = GameState.SelectTrumpSuitAi;
                     break;
                 case GameState.SelectTrumpSuitAi:
                     //calculate AI work
@@ -452,11 +488,12 @@ var Controller;
                     //  or go to the next AI
                     var incrementIfFirst = 0;
                     if (this.setStart == 0)
-                        incrementIfFirst = 1;
+                        incrementIfFirst = 0;
                     for (var i = 0; i < 4; i++) {
                         var eltToCheck = (this.setStart + i + incrementIfFirst) % 4;
                         if (eltToCheck == 0) {
-                            this.state = GameState.SelectTrumpSuit;
+                            this.userInput = true;
+                            this.state = GameState.SelectingTrumpSuit;
                             break;
                         }
                         else {
@@ -471,6 +508,7 @@ var Controller;
                     break;
                 case GameState.Game:
                     this.state = GameState.Game_RoundStart;
+                    this.roundUserStart = this.setStart;
                     break;
                 case GameState.Game_RoundStart:
                     this.currentRoundTurnNumber = 0;
@@ -528,6 +566,7 @@ var Controller;
                         this.sideScore = 0;
                         this.crossScore = 0;
                         this.state = GameState.Game_EndOfSet;
+                        this.setStart = (this.setStart + 1) % 4;
                         this.currentSetRoundNumber = 0;
                     }
                     else {
@@ -557,7 +596,7 @@ var Controller;
             var max = -1;
             var index = 0;
             var keys = ["Hearts", "Diamonds", "Spades", "Clubs"];
-            if (start == eltToCheck) {
+            if (start == eltToCheck && this.userInput) {
                 forced = true;
             }
             else {

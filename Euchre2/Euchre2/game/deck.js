@@ -33,21 +33,21 @@ var Model;
             }
             // test, with a default list of cards
             this.cards = new Array();
-            this.cards.push(new Card("Hearts", "9"));
+            this.cards.push(new Card("Spades", "J"));
             this.cards.push(new Card("Hearts", "10"));
             this.cards.push(new Card("Clubs", "Q"));
-            this.cards.push(new Card("Spades", "J"));
-            this.cards.push(new Card("Diamonds", "10"));
             this.cards.push(new Card("Diamonds", "9"));
+            this.cards.push(new Card("Diamonds", "10"));
+            this.cards.push(new Card("Spades", "A"));
             this.cards.push(new Card("Hearts", "J"));
             this.cards.push(new Card("Clubs", "9"));
-            this.cards.push(new Card("Hearts", "K"));
+            this.cards.push(new Card("Clubs", "A"));
             this.cards.push(new Card("Diamonds", "K"));
             this.cards.push(new Card("Spades", "9"));
             this.cards.push(new Card("Spades", "K"));
-            this.cards.push(new Card("Spades", "A"));
+            this.cards.push(new Card("Hearts", "9"));
             this.cards.push(new Card("Diamonds", "J"));
-            this.cards.push(new Card("Clubs", "A"));
+            this.cards.push(new Card("Hearts", "K"));
             this.cards.push(new Card("Spades", "10"));
             this.cards.push(new Card("Clubs", "K"));
             this.cards.push(new Card("Spades", "Q"));
