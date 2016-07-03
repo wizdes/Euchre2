@@ -21,7 +21,10 @@ module Namespace.State {
 
         update() {
             // if there is a move operation
-            if (this.currentView.shouldMove()) {
+            if (this.currentView.shouldPause()) {
+                
+            }
+            else if (this.currentView.shouldMove()) {
                 this.currentView.doMoveOperation();
             } else if (this.gameStateController.nextActionExists()) {
                 //  pull the action and execute it
@@ -52,7 +55,7 @@ module Namespace.State {
                 this.game.gameStateController.setTrumpSuitAddUiActions(suit);
             }
             else if (this.action == "Pass") {
-                this.game.gameStateController.setGameState(Controller.GameState.SelectTrumpSuitPrep);                
+                this.game.gameStateController.setGameState(Controller.GameState.SelectCardTrumpPassAi);                
             }
             else if (this.action == "cardTouch") {
                 if (this.game.gameStateController.state == Controller.GameState.SelectingCardTrumpPickupSwitch) {

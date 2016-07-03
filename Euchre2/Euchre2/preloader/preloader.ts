@@ -17,7 +17,7 @@
             }
 
             this.load.image("cardBack", "assets/cardBack_red3.png");
-
+            this.load.image("black", "assets/black.png");
         }
 
         create() {

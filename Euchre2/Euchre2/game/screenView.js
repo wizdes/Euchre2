@@ -6,8 +6,6 @@ var ScreenView;
             this.currentGame = game;
         }
         SignButtonView.prototype.Clear = function () {
-            if (this.ActionImgObj != null)
-                this.ActionImgObj.destroy();
             if (this.Pickup != null)
                 this.Pickup.destroy();
             if (this.Pass != null)
@@ -23,8 +21,37 @@ var ScreenView;
             if (this.Clubs != null)
                 this.Clubs.destroy();
         };
+        SignButtonView.prototype.ShowHud = function () {
+            this.HudBar = this.currentGame.add.sprite(0, 0, 'black');
+            this.HudBar.alpha = 0.2;
+            this.HudBar.width = 900;
+            this.HudBar.height = 50;
+        };
+        SignButtonView.prototype.ShowMessageBoard = function () {
+            this.HudBar = this.currentGame.add.sprite(0, 50, 'black');
+            this.HudBar.alpha = 0.1;
+            this.HudBar.width = 900;
+            this.HudBar.height = 50;
+        };
         SignButtonView.prototype.ShowActionTitle = function (text) {
-            this.ActionImgObj = this.PickupOrPass = this.currentGame.add.text(300, 400, text, { font: '30px dimboregular', fill: '#000' });
+            if (this.ActionImgObj != null)
+                this.ActionImgObj.destroy();
+            this.ActionImgObj = this.currentGame.add.text(2, 5, text, { font: '30px dimboregular', fill: '#000' });
+        };
+        SignButtonView.prototype.ShowMessageText = function (text) {
+            if (this.MessageTextObj != null)
+                this.MessageTextObj.destroy();
+            this.MessageTextObj = this.currentGame.add.text(2, 55, text, { font: '30px dimboregular', fill: '#000' });
+        };
+        SignButtonView.prototype.ShowPoints = function (text) {
+            if (this.PointObj != null)
+                this.PointObj.destroy();
+            this.PointObj = this.currentGame.add.text(500, 55, text, { font: '30px dimboregular', fill: '#000' });
+        };
+        SignButtonView.prototype.ShowSelectedTrump = function (suit) {
+            if (this.TrumpObj != null)
+                this.TrumpObj.destroy();
+            this.TrumpObj = this.currentGame.add.text(500, 55, suit, { font: '30px dimboregular', fill: '#000' });
         };
         SignButtonView.prototype.ShowPickupOrPass = function () {
             this.Pickup = this.currentGame.add.text(300, 1000, 'Pick up', { font: '30px dimboregular', fill: '#000' });
@@ -92,22 +119,22 @@ var ScreenView;
             switch (numPlayer) {
                 case 0:
                     this.initX = 80;
-                    this.initY = 1300;
+                    this.initY = 1370;
                     this.moveX = 150;
                     break;
                 case 1:
                     this.initX = 80;
-                    this.initY = 250;
+                    this.initY = 320;
                     this.moveY = 200;
                     break;
                 case 2:
                     this.initX = 80;
-                    this.initY = 50;
+                    this.initY = 120;
                     this.moveX = 150;
                     break;
                 case 3:
                     this.initX = 680;
-                    this.initY = 250;
+                    this.initY = 320;
                     this.moveY = 200;
                     break;
                 default:
@@ -148,6 +175,9 @@ var ScreenView;
             this.map = {};
             this.players = new Array();
             this.signView = new SignButtonView(this.currentGame);
+            this.signView.ShowHud();
+            this.signView.ShowMessageBoard();
+            this.waitEnd = 0;
             for (var i = 0; i < 4; i++) {
                 this.players.push(new PlayerView(i));
             }
@@ -206,6 +236,15 @@ var ScreenView;
             }
             return false;
         };
+        ScreenView.prototype.shouldPause = function () {
+            if (Date.now() < this.waitEnd) {
+                return true;
+            }
+            return false;
+        };
+        ScreenView.prototype.setPause = function (pauseTimeInSeconds) {
+            this.waitEnd = Date.now() + 1000 * pauseTimeInSeconds;
+        };
         ScreenView.prototype.abs = function (val) {
             if (val < 0)
                 return -1 * val;
@@ -256,25 +295,40 @@ var ScreenView;
                 this.drawAt(initX, initY, action.cardSuit, action.cardValue, finalX, finalY, hidden);
             }
             else if (actionElements[0] == "Show") {
+                var messageElements = action.actionName.split("`");
+                var message = messageElements[1];
+                // ActionImgObj;
+                // MessageTextObj;
+                // PointObj;
+                // SuitObj;
+                if (actionElements[1] == "Title") {
+                    this.signView.ShowActionTitle(message);
+                }
+                else if (actionElements[1] == "Message") {
+                    this.signView.ShowMessageText(message);
+                }
+                else if (actionElements[1] == "Point") {
+                    this.signView.ShowPoints(message);
+                }
+                else if (actionElements[1] == "Suit") {
+                    this.signView.ShowSelectedTrump(message);
+                }
                 //Show-SelectCardTrump
                 if (actionElements[1] == "SelectCardTrump") {
-                    this.signView.Clear();
-                    this.signView.ShowActionTitle('Pick up card');
                     this.signView.ShowPickupOrPass();
                 }
                 else if (actionElements[1] == "SelectTrump") {
                     this.signView.Clear();
-                    this.signView.ShowActionTitle('Pick suit?');
                     this.signView.ShowChooseOptions();
                     this.signView.ShowSuitOptions();
                 }
                 else if (actionElements[1] == "SelectCardSwitch") {
                     this.signView.Clear();
-                    this.signView.ShowActionTitle('Select card to switch');
+                    this.signView.ShowMessageText('Select card to switch');
                 }
                 else if (actionElements[1] == "StartGame") {
                     this.signView.Clear();
-                    this.signView.ShowActionTitle('Game start.');
+                    this.signView.ShowActionTitle('Phase - Game start.');
                 }
             }
             else if (actionElements[0] == "Remove") {
@@ -315,6 +369,9 @@ var ScreenView;
                     this.drawAtNoInit(cardRep[i].split(",")[0], cardRep[i].split(",")[1], this.getPlayerClearX(playerNum), this.getPlayerClearY(playerNum), false);
                 }
             }
+            else if (actionElements[0] == "Pause") {
+                this.setPause(action.duration);
+            }
         };
         ScreenView.prototype.getPlayerClearX = function (player) {
             if (player == 0 || player == 2) {
@@ -342,11 +399,11 @@ var ScreenView;
         };
         ScreenView.prototype.getPlayerCenterY = function (player) {
             if (player == 1 || player == 3) {
-                return 450;
+                return 550;
             }
             if (player == 2)
-                return 250;
-            return 650;
+                return 350;
+            return 750;
         };
         ScreenView.prototype.doMoveOperation = function () {
             for (var i = 0; i < this.cardViews.length; i++) {

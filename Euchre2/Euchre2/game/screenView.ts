@@ -3,7 +3,6 @@
 
     class SignButtonView {
         currentGame;
-        ActionImgObj;
         PickupOrPass;
         PickClubs;
         PickSpades;
@@ -16,13 +15,18 @@
         Hearts;
         Diamonds;
         Clubs;
+        HudBar;
+        MessageBar;
+        ActionImgObj;
+        MessageTextObj;
+        PointObj;
+        TrumpObj;
 
         constructor(game) {
             this.currentGame = game;
         }
 
         Clear() {
-            if (this.ActionImgObj != null) this.ActionImgObj.destroy();
             if (this.Pickup != null) this.Pickup.destroy();
             if (this.Pass != null) this.Pass.destroy();
             if (this.Choose != null) this.Choose.destroy();
@@ -33,8 +37,38 @@
 
         }
 
+        ShowHud() {
+            this.HudBar = this.currentGame.add.sprite(0, 0, 'black');
+            this.HudBar.alpha = 0.2;
+            this.HudBar.width = 900;
+            this.HudBar.height = 50;
+        }
+
+        ShowMessageBoard() {
+            this.HudBar = this.currentGame.add.sprite(0, 50, 'black');
+            this.HudBar.alpha = 0.1;
+            this.HudBar.width = 900;
+            this.HudBar.height = 50;
+        }
+
         ShowActionTitle(text) {
-            this.ActionImgObj = this.PickupOrPass = this.currentGame.add.text(300, 400, text, { font: '30px dimboregular', fill: '#000' });
+            if (this.ActionImgObj != null) this.ActionImgObj.destroy();
+            this.ActionImgObj = this.currentGame.add.text(2, 5, text, { font: '30px dimboregular', fill: '#000' });
+        }
+
+        ShowMessageText(text) {
+            if (this.MessageTextObj != null) this.MessageTextObj.destroy();
+            this.MessageTextObj = this.currentGame.add.text(2, 55, text, { font: '30px dimboregular', fill: '#000' });
+        }
+
+        ShowPoints(text) {
+            if (this.PointObj != null) this.PointObj.destroy();
+            this.PointObj = this.currentGame.add.text(500, 55, text, { font: '30px dimboregular', fill: '#000' });
+        }
+
+        ShowSelectedTrump(suit) {
+            if (this.TrumpObj != null) this.TrumpObj.destroy();
+            this.TrumpObj = this.currentGame.add.text(500, 55, suit, { font: '30px dimboregular', fill: '#000' });            
         }
 
         ShowPickupOrPass() {
@@ -131,22 +165,22 @@
             switch(numPlayer) {
                 case 0:
                     this.initX = 80;
-                    this.initY = 1300;
+                    this.initY = 1370;
                     this.moveX = 150;
                     break;
                 case 1:
                     this.initX = 80;
-                    this.initY = 250;
+                    this.initY = 320;
                     this.moveY = 200;
                     break;
                 case 2:
                     this.initX = 80;
-                    this.initY = 50;
+                    this.initY = 120;
                     this.moveX = 150;
                     break;
                 case 3:
                     this.initX = 680;
-                    this.initY = 250;
+                    this.initY = 320;
                     this.moveY = 200;
                     break;
                 default:
@@ -189,6 +223,7 @@
         private map: { [key: string]: CardView; } = {};
         private players: PlayerView[];
         private signView: SignButtonView;
+        private waitEnd : number;
 
         constructor(game) {
             this.currentGame = game;
@@ -198,6 +233,9 @@
             this.map = {};
             this.players = new Array<PlayerView>();
             this.signView = new SignButtonView(this.currentGame);
+            this.signView.ShowHud();
+            this.signView.ShowMessageBoard();
+            this.waitEnd = 0;
 
             for (var i = 0; i < 4; i++) {
                 this.players.push(new PlayerView(i));
@@ -273,6 +311,18 @@
             return false;
         }
 
+        shouldPause() {
+            if (Date.now() < this.waitEnd) {
+                return true;
+            }
+
+            return false;
+        }
+
+        setPause(pauseTimeInSeconds) {
+            this.waitEnd = Date.now() + 1000 * pauseTimeInSeconds;
+        }
+
         abs(val) {
             if (val < 0) return -1 * val;
             return val;
@@ -325,25 +375,43 @@
                 this.drawAt(initX, initY, action.cardSuit, action.cardValue, finalX, finalY, hidden);
             }
             else if (actionElements[0] == "Show") {
+                var messageElements = action.actionName.split("`");
+                var message = messageElements[1];
+                // ActionImgObj;
+                // MessageTextObj;
+                // PointObj;
+                // SuitObj;
+
+                if (actionElements[1] == "Title") {
+                    this.signView.ShowActionTitle(message);
+
+                }
+                else if (actionElements[1] == "Message") {
+                    this.signView.ShowMessageText(message);
+                }
+                else if (actionElements[1] == "Point") {
+                    this.signView.ShowPoints(message);
+                }
+                else if (actionElements[1] == "Suit") {
+                    this.signView.ShowSelectedTrump(message);
+                }
+
                 //Show-SelectCardTrump
                 if (actionElements[1] == "SelectCardTrump") {
-                    this.signView.Clear();
-                    this.signView.ShowActionTitle('Pick up card');
                     this.signView.ShowPickupOrPass();
                 }
                 else if (actionElements[1] == "SelectTrump") {
                     this.signView.Clear();
-                    this.signView.ShowActionTitle('Pick suit?');
                     this.signView.ShowChooseOptions();
                     this.signView.ShowSuitOptions();
                 }
                 else if (actionElements[1] == "SelectCardSwitch") {
                     this.signView.Clear();
-                    this.signView.ShowActionTitle('Select card to switch');
+                    this.signView.ShowMessageText('Select card to switch');
                 }
                 else if (actionElements[1] == "StartGame") {
                     this.signView.Clear();
-                    this.signView.ShowActionTitle('Game start.');
+                    this.signView.ShowActionTitle('Phase - Game start.');
                 }
             }
             else if (actionElements[0] == "Remove") {
@@ -386,6 +454,9 @@
                     this.drawAtNoInit(cardRep[i].split(",")[0], cardRep[i].split(",")[1], this.getPlayerClearX(playerNum), this.getPlayerClearY(playerNum), false);
                 }
             }
+            else if (actionElements[0] == "Pause") {
+                this.setPause(action.duration);
+            }
         }
 
         getPlayerClearX(player) {
@@ -414,10 +485,10 @@
 
         getPlayerCenterY(player) {
             if (player == 1 || player == 3) {
-                return 450;
+                return 550;
             }
-            if (player == 2) return 250;
-            return 650;            
+            if (player == 2) return 350;
+            return 750;            
         }
 
         doMoveOperation() {
