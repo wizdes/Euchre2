@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{8AD42F6E-7EE3-410A-930E-F99DA69221B2}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="app.css" />
+    <Content Include="assets\cardBack_blue1.png" />
+    <Content Include="assets\cardBack_blue2.png" />
+    <Content Include="assets\cardBack_blue3.png" />
+    <Content Include="assets\cardBack_blue4.png" />
+    <Content Include="assets\cardBack_blue5.png" />
+    <Content Include="assets\cardBack_green1.png" />
+    <Content Include="assets\cardBack_green2.png" />
+    <Content Include="assets\cardBack_green3.png" />
+    <Content Include="assets\cardBack_green4.png" />
+    <Content Include="assets\cardBack_green5.png" />
+    <Content Include="assets\cardBack_red1.png" />
+    <Content Include="assets\cardBack_red2.png" />
+    <Content Include="assets\cardBack_red3.png" />
+    <Content Include="assets\cardBack_red4.png" />
+    <Content Include="assets\cardBack_red5.png" />
+    <Content Include="assets\cardClubs10.png" />
+    <Content Include="assets\cardClubs2.png" />
+    <Content Include="assets\cardClubs3.png" />
+    <Content Include="assets\cardClubs4.png" />
+    <Content Include="assets\cardClubs5.png" />
+    <Content Include="assets\cardClubs6.png" />
+    <Content Include="assets\cardClubs7.png" />
+    <Content Include="assets\cardClubs8.png" />
+    <Content Include="assets\cardClubs9.png" />
+    <Content Include="assets\cardClubsA.png" />
+    <Content Include="assets\cardClubsJ.png" />
+    <Content Include="assets\cardClubsK.png" />
+    <Content Include="assets\cardClubsQ.png" />
+    <Content Include="assets\cardDiamonds10.png" />
+    <Content Include="assets\cardDiamonds2.png" />
+    <Content Include="assets\cardDiamonds3.png" />
+    <Content Include="assets\cardDiamonds4.png" />
+    <Content Include="assets\cardDiamonds5.png" />
+    <Content Include="assets\cardDiamonds6.png" />
+    <Content Include="assets\cardDiamonds7.png" />
+    <Content Include="assets\cardDiamonds8.png" />
+    <Content Include="assets\cardDiamonds9.png" />
+    <Content Include="assets\cardDiamondsA.png" />
+    <Content Include="assets\cardDiamondsJ.png" />
+    <Content Include="assets\cardDiamondsK.png" />
+    <Content Include="assets\cardDiamondsQ.png" />
+    <Content Include="assets\cardHearts10.png" />
+    <Content Include="assets\cardHearts2.png" />
+    <Content Include="assets\cardHearts3.png" />
+    <Content Include="assets\cardHearts4.png" />
+    <Content Include="assets\cardHearts5.png" />
+    <Content Include="assets\cardHearts6.png" />
+    <Content Include="assets\cardHearts7.png" />
+    <Content Include="assets\cardHearts8.png" />
+    <Content Include="assets\cardHearts9.png" />
+    <Content Include="assets\cardHeartsA.png" />
+    <Content Include="assets\cardHeartsJ.png" />
+    <Content Include="assets\cardHeartsK.png" />
+    <Content Include="assets\cardHeartsQ.png" />
+    <Content Include="assets\cardJoker.png" />
+    <Content Include="assets\cardSpades10.png" />
+    <Content Include="assets\cardSpades2.png" />
+    <Content Include="assets\cardSpades3.png" />
+    <Content Include="assets\cardSpades4.png" />
+    <Content Include="assets\cardSpades5.png" />
+    <Content Include="assets\cardSpades6.png" />
+    <Content Include="assets\cardSpades7.png" />
+    <Content Include="assets\cardSpades8.png" />
+    <Content Include="assets\cardSpades9.png" />
+    <Content Include="assets\cardSpadesA.png" />
+    <Content Include="assets\cardSpadesJ.png" />
+    <Content Include="assets\cardSpadesK.png" />
+    <Content Include="assets\cardSpadesQ.png" />
+    <Content Include="assets\icon.png" />
+    <Content Include="dep\phaser.js" />
+    <Content Include="dep\phaser.min.js" />
+    <Content Include="fonts\dimbo_regular-webfont.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="index.html" />
+    <Content Include="todoList.txt" />
+    <Content Include="web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="credits\credits.ts" />
+    <TypeScriptCompile Include="dep\p2.d.ts" />
+    <TypeScriptCompile Include="dep\phaser.d.ts" />
+    <TypeScriptCompile Include="dep\pixi.d.ts" />
+    <TypeScriptCompile Include="game\card.ts" />
+    <TypeScriptCompile Include="game\deck.ts" />
+    <TypeScriptCompile Include="game\gameStateController.ts" />
+    <TypeScriptCompile Include="game\mainGame.ts" />
+    <TypeScriptCompile Include="game\playerController.ts" />
+    <TypeScriptCompile Include="game\screenView.ts" />
+    <TypeScriptCompile Include="instructions\instructions.ts" />
+    <TypeScriptCompile Include="menu\mainmenu.ts" />
+    <TypeScriptCompile Include="preloader\preloader-bar.ts" />
+    <TypeScriptCompile Include="preloader\preloader.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fonts\dimbo_regular-webfont.eot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="fonts\dimbo_regular-webfont.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="fonts\dimbo_regular-webfont.woff">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="fonts\dimbo_regular-webfont.woff2">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>Euchre2</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>1917</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:1917/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+</Project>
