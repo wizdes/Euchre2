@@ -14,10 +14,12 @@ columns = 3;
 
     colors = ["0xffffff", "0xff0000", "0x00ff00", "0x0000ff", "0xffff00"];
     instructionsText = ["Welcome to Euchre! Euchre is a game between 4 people. You, and the person across from you, are partners to win as many points as possible. The objective of the game is to get to 10 points.\n\nThere are several phases to this game: The Trump Calling round and the game round.",
-        "The Trump Calling round starts at the beginning of the game. The Trump Calling round is the round where the trump suit is chosen. We'll go into what it means to have the trump suit later. \n\n The Trump Calling round has two parts: the card pickup phase and the suit picking phase. \n\nA player at the beginning of each round is chosen to start. In the card pick up round, a single card is revealed. Each player as the choice to make the starting player to pick up the card. If this is chosen, then the suit of that card is the trump suit and the game starts. Otherwise, the Trump calling round goes into the suit picking phase.",
-        "The suit picking phase is where each player gets to name a suit ",
-        "4",
-        "5"];
+        "The Trump Calling round starts at the beginning of the game. The Trump Calling round is the round where the trump suit is chosen. We'll go into what it means to have the trump suit later. \n\n The Trump Calling round has two parts: the card pickup phase and the suit picking phase. \n\nA player at the beginning of each round is chosen to start. In the card pick up round, a single card is revealed. Each player as the choice to make the starting player to pick up the card. If this is chosen, then the suit of that card is the trump suit and the game starts. Otherwise, the Trump calling round goes into the suit picking phase. The team that called to pick up the card are known as the makers.",
+        "The suit picking phase is where each player gets to name a suit. That suit then becomes the trump. If no one picks a suit, then the starting player is 'screwed' and must pick a suit. The team that picked the suit are known as the makers. After the suit is chosen, the game phase starts.",
+        "The game phase starts with the chosen starting player, with the player playing a card of his/her choice. The next player (clock-wise) must then play a card that follows suit, or a trump card. If there are none, then the player can play a card of any suit. \n\nThe team that plays the highest card wins the hand. The highest card is determined by the following order:\n\n 9<10<J<Q<K<A (of chosen suit) < 9<10<Q<K<A (of trump suit) < J < (of same color, different suit of trump) < J (of trump suit).",
+        "A set is over once every card in each players' hand is won. The winning team is the team that has the most number of tricks won. If the makers win, then they get 1 point. If the defenders win, they get 2 points. Either team that gets all 5 tricks win 2 points."];
+
+    yvalue = [300, 625, 300, 525,275];
 
     preload() {
         // level pages at the bottom
@@ -57,7 +59,7 @@ columns = 3;
                 // looping through all columns
                 var style = { font: '50px dimboregular', fill: 'black', align: 'left', wordWrap: true, wordWrapWidth: 800 };
 
-                var text = this.game.add.text(k * this.game.width + 400, 150, this.instructionsText[k], style);
+                var text = this.game.add.text(k * this.game.width + 400, this.yvalue[k], this.instructionsText[k], style);
                 text.anchor.set(0.5);
 
                 this.scrollingMap.addChild(text);
