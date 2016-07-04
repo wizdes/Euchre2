@@ -26,7 +26,8 @@ module Controller {
         SelectTrumpUser,
         SelectTrumpAi,
         SelectTrumpSuitAi,
-        SelectTrumpSuitPrep
+        SelectTrumpSuitPrep,
+        GameEnd
     }
 
     export class Action {
@@ -197,6 +198,8 @@ module Controller {
         private dealerScrewedCount: number;
         private numSet : number;
 
+        private cardInitiative: number;
+
         constructor() {
             this.actions = new Array<Action>();
             this.players = new Array<PlayerController>();
@@ -351,9 +354,10 @@ module Controller {
 
             this.currentRoundTurnNumber++;
 
+            this.actions.push(new Action("Player " + 1 + " played the " + value + " of " + suit + ".", 0.5, null, null, null));
+
             // use this pattern in the future instead of 'ing' state 
             this.setGameState(GameState.Game_DetermineNextPlayerInRound);
-
         }
 
         GetCurrentAiPlayer() {
@@ -419,6 +423,7 @@ module Controller {
                 this.actions.push(new Action("Sort-Hand-Player" + (this.GetCurrentAiPlayer() + 1) + "-" + i, -1, this.players[this.GetCurrentAiPlayer()].cards[i].cardValue, this.players[this.GetCurrentAiPlayer()].cards[i].cardSuit, null));
             }
 
+            this.actions.push(new Action("Player " + (this.GetCurrentAiPlayer() + 1) + " played the " + value + " of " + suit + ".", 0.5, null, null, null));
             this.actions.push(new Action("Pause", 0.5, null, null, null));
 
             this.currentRoundTurnNumber++;
@@ -464,10 +469,14 @@ module Controller {
         setActionForGameState() {
             switch(this.state) {
                 case GameState.Shuffle:
+                    this.cardInitiative = 0;
                     this.actions.push(new Action("Show-Title-`Phase - Beginning the round.", -1, null, null, null));
                     this.actions.push(new Action("Show-Message-`Shuffling and passing.", -1, null, null, null));
                     this.sideScore = 0;
                     this.crossScore = 0;
+                    this.actions.push(new Action("Show-Point-`Score: " + this.globalCrossScore + " - " + this.globalSideScore, -1, null, null, null));
+                    this.actions.push(new Action("Show-Suit-` ", -1, null, null, null));
+
                     this.userInput = false;
                     this.dealerScrewedCount = 0;
 
@@ -517,6 +526,8 @@ module Controller {
                         //create the sign
                         this.actions.push(new Action("Show-SelectCardSwitch", -1, null, null, null));
                         this.setTrumpSelector(this.cardInMiddleForTrump.cardSuit);
+                        this.actions.push(new Action("Show-Suit-`Trump Suit: " + this.suitToSuitString(this.trumpSelector), -1, null, null, null));
+                        this.cardInitiative = 0;
                         // wait for user input
                         this.state = GameState.SelectingCardTrumpPickupSwitch;
                     } else {
@@ -561,6 +572,9 @@ module Controller {
                                 this.state = GameState.SelectCardTrumpPickupSwitch;
                                 this.actions.push(new Action("Show-Message-`Player " + (eltToCheck + 1) + " decided for the card to be picked up.", -1, null, null, null));
                                 this.actions.push(new Action("Pause", 1, null, null, null));
+                                if (eltToCheck == 2) this.cardInitiative = 0;
+                                else this.cardInitiative = 1;
+
                                 break;
                             } else {
                                 this.actions.push(new Action("Show-Message-`Player " + (eltToCheck + 1) + " decided to pass.", -1, null, null, null));                                
@@ -609,6 +623,7 @@ module Controller {
 
                     if (this.dealerScrewedCount >= 4 && this.setStart == 0) {
                         this.actions.push(new Action("Show-Message-`Player " + (1) + " is screwed and must pick a suit.", -1, null, null, null));
+                        this.cardInitiative = 0;
                         this.state = GameState.SelectingTrumpSuit;
                         break;
                     }
@@ -634,6 +649,8 @@ module Controller {
                                 this.actions.push(new Action("Pause", 1, null, null, null));
                                 this.dealerScrewedCount++;
                                 this.setTrumpSuitAddUiActions(this.suitToSuitString(s));
+                                if (eltToCheck == 2) this.cardInitiative = 0;
+                                else this.cardInitiative = 1;
                                 this.state = GameState.Game;
                                 break;
                             } else {
@@ -676,7 +693,7 @@ module Controller {
                 case GameState.Game_DetermineNextPlayerInRound:
                     if(this.currentRoundTurnNumber == 4){
                         this.state = GameState.Game_EndOfRound;
-                        this.actions.push(new Action("Pause", 2, null, null, null));
+                        this.actions.push(new Action("Pause", 1, null, null, null));
                         break;
                     }
                     else if (this.GetCurrentAiPlayer() == 0){
@@ -692,6 +709,8 @@ module Controller {
                     var winnerIndex = this.cardsInMiddleLogic.getWinner();
                     this.roundUserStart = winnerIndex;
 
+                    this.actions.push(new Action("Show-Message-`Player " + (winnerIndex + 1) + " wins this hand.", -1, null, null, null));
+
                     console.log(this.crossScore + " " + this.sideScore + " " + this.globalCrossScore + " " + this.globalSideScore);
 
                     if (winnerIndex == 0 || winnerIndex == 2) {
@@ -705,12 +724,21 @@ module Controller {
                         this.actions.push(new Action("Clean-Board", -1, null, null, null));
 
                         //calculate points here
-
                         if (this.crossScore > this.sideScore) {
                             this.globalCrossScore++;
+                            if (this.crossScore == 5 || this.cardInitiative == 1) {
+                                this.globalCrossScore++;
+                            }
+                            this.actions.push(new Action("Show-Message-`Players 1 and 3 wins this round.", -1, null, null, null));
                         } else {
                             this.globalSideScore++;
+                            if (this.sideScore == 5 || this.cardInitiative == 0) {
+                                this.globalSideScore++;
+                            }
+                            this.actions.push(new Action("Show-Message-`Players 2 and 4 wins this round.", -1, null, null, null));
                         }
+
+                        this.actions.push(new Action("Show-Point-`Score: " + this.globalCrossScore + " - " + this.globalSideScore, -1, null, null, null));
 
                         this.sideScore = 0;
                         this.crossScore = 0;
@@ -732,14 +760,29 @@ module Controller {
 
                     break;
                 case GameState.Game_EndOfSet:
-                    this.roundUserStart++;
-                    this.numSet++;
-                    this.roundUserStart = this.roundUserStart % 4;
-                    this.state = GameState.Shuffle;
+                    if (this.globalCrossScore >= 10) {
+                        this.actions.push(new Action("Win", -1, null, null, null));
+                        this.state = GameState.GameEnd;
+                    }
+                    else if (this.globalSideScore >= 10) {
+                        this.actions.push(new Action("Lose", -1, null, null, null));
+                        this.state = GameState.GameEnd;
+                    } else {
+                        this.roundUserStart++;
+                        this.numSet++;
+                        this.roundUserStart = this.roundUserStart % 4;
+                        this.state = GameState.Shuffle;
+                        break;                        
+                    }
+                case GameState.GameEnd:
                     break;
                 default:
                     return;
             }    
+        }
+
+        IsComplete() {
+            return this.globalCrossScore >= 10 || this.globalSideScore >= 10;
         }
 
         // TODO: add this function
@@ -783,6 +826,7 @@ module Controller {
         setTrumpSuitAddUiActions(s: string) {
             this.state = GameState.Game;
             this.setTrumpSelector(s);
+            this.actions.push(new Action("Show-Suit-`Trump Suit: " + this.suitToSuitString(this.trumpSelector), -1, null, null, null));
         }
     }
 }

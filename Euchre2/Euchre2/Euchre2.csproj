@@ -91,9 +91,14 @@
     <Content Include="assets\cardSpadesJ.png" />
     <Content Include="assets\cardSpadesK.png" />
     <Content Include="assets\cardSpadesQ.png" />
+    <Content Include="assets\icon.png" />
     <Content Include="dep\phaser.js" />
     <Content Include="dep\phaser.min.js" />
+    <Content Include="fonts\dimbo_regular-webfont.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="index.html" />
+    <Content Include="todoList.txt" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +119,18 @@
     <TypeScriptCompile Include="preloader\preloader.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="fonts\dimbo_regular-webfont.eot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="fonts\dimbo_regular-webfont.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="fonts\dimbo_regular-webfont.woff">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="fonts\dimbo_regular-webfont.woff2">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

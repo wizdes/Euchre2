@@ -39,8 +39,8 @@ module Namespace.State {
 
         // pass this to each cardView to call
         handleUserInput(){
-            if (this.game.currentView.shouldMove()) {
-                //animation is going on. no user input is allowed, silly.
+            if (this.game.currentView.shouldMove() || (this.game.gameStateController.IsComplete() && this.action != "Back")) {
+                //animation is going on or you win/lost. no user input is allowed, silly.
                 return;
             }
 
@@ -65,6 +65,9 @@ module Namespace.State {
                 else if(this.game.gameStateController.state == Controller.GameState.Game_UserInputTurn){
                     this.game.gameStateController.PlayCard(0, this.value, this.suit);
                 }
+            }
+            else if (this.action == "Back") {
+                this.game.state.start('mainmenu', true);
             }
         }
     }

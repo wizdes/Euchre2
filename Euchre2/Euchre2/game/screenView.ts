@@ -1,5 +1,5 @@
 ﻿module ScreenView {
-    var hiddenCardsLogic = false;
+    var hiddenCardsLogic = true;
 
     class SignButtonView {
         currentGame;
@@ -21,6 +21,11 @@
         MessageTextObj;
         PointObj;
         TrumpObj;
+        BackObj;
+        p1;
+        p2;
+        p3;
+        p4;
 
         constructor(game) {
             this.currentGame = game;
@@ -63,51 +68,85 @@
 
         ShowPoints(text) {
             if (this.PointObj != null) this.PointObj.destroy();
-            this.PointObj = this.currentGame.add.text(500, 55, text, { font: '30px dimboregular', fill: '#000' });
+            this.PointObj = this.currentGame.add.text(600, 5, text, { font: '30px dimboregular', fill: '#000' });
         }
 
         ShowSelectedTrump(suit) {
             if (this.TrumpObj != null) this.TrumpObj.destroy();
-            this.TrumpObj = this.currentGame.add.text(500, 55, suit, { font: '30px dimboregular', fill: '#000' });            
+            this.TrumpObj = this.currentGame.add.text(600, 55, suit, { font: '30px dimboregular', fill: '#000' });            
         }
 
         ShowPickupOrPass() {
-            this.Pickup = this.currentGame.add.text(300, 1000, 'Pick up', { font: '30px dimboregular', fill: '#000' });
+            this.Pickup = this.currentGame.add.text(270, 1000, 'Pick up', { font: '50px dimboregular', fill: '#000' });
             this.Pickup.inputEnabled = true;
             this.Pickup.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Pick up", action:"Pick up", game:this.currentGame});
             
-            this.Pass = this.currentGame.add.text(600, 1000, 'Pass', { font: '30px dimboregular', fill: '#000' });
+            this.Pass = this.currentGame.add.text(515, 1000, 'Pass', { font: '50px dimboregular', fill: '#000' });
             this.Pass.inputEnabled = true;
             this.Pass.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Pass", action: "Pass", game: this.currentGame });
         }
 
         ShowChooseOptions() {
-            this.Choose = this.currentGame.add.text(300, 1000, 'Choose', { font: '30px dimboregular', fill: '#000' });
-            this.Choose.inputEnabled = true;
-            this.Choose.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Choose", action: "Choose", game: this.currentGame });
+            //this.Choose = this.currentGame.add.text(270, 1000, 'Choose', { font: '50px dimboregular', fill: '#000' });
+            //this.Choose.inputEnabled = true;
+            //this.Choose.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Choose", action: "Choose", game: this.currentGame });
 
-            this.Pass = this.currentGame.add.text(600, 1000, 'Pass', { font: '30px dimboregular', fill: '#000' });
+            this.Pass = this.currentGame.add.text(515, 1000, 'Pass', { font: '50px dimboregular', fill: '#000' });
             this.Pass.inputEnabled = true;
             this.Pass.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Pass Choose", action: "Pass Choose", game: this.currentGame });
         }
 
         ShowSuitOptions() {
-            this.Spades = this.currentGame.add.text(300, 500, 'Spades', { font: '30px dimboregular', fill: '#000' });
+            this.Spades = this.currentGame.add.text(300, 500, 'Spades', { font: '50px dimboregular', fill: '#000' });
             this.Spades.inputEnabled = true;
             this.Spades.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseSpades", action: "ChooseSpades", game: this.currentGame });
 
-            this.Hearts = this.currentGame.add.text(300, 600, 'Hearts', { font: '30px dimboregular', fill: '#000' });
+            this.Hearts = this.currentGame.add.text(300, 575, 'Hearts', { font: '50px dimboregular', fill: '#963232' });
             this.Hearts.inputEnabled = true;
             this.Hearts.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseHearts", action: "ChooseHearts", game: this.currentGame });
 
-            this.Diamonds = this.currentGame.add.text(300, 700, 'Diamonds', { font: '30px dimboregular', fill: '#000' });
+            this.Diamonds = this.currentGame.add.text(300, 650, 'Diamonds', { font: '50px dimboregular', fill: '#963232' });
             this.Diamonds.inputEnabled = true;
             this.Diamonds.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseDiamonds", action: "ChooseDiamonds", game: this.currentGame });
 
-            this.Clubs = this.currentGame.add.text(300, 800, 'Clubs', { font: '30px dimboregular', fill: '#000' });
+            this.Clubs = this.currentGame.add.text(300, 725, 'Clubs', { font: '50px dimboregular', fill: '#000' });
             this.Clubs.inputEnabled = true;
             this.Clubs.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseClubs", action: "ChooseClubs", game: this.currentGame });
+        }
 
+        ShowBackObj() {
+            this.BackObj = this.currentGame.add.text(800, 5, "Back", { font: '30px dimboregular', fill: '#000' });
+            this.BackObj.inputEnabled = true;
+            this.BackObj.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Back", action: "Back", game: this.currentGame });
+        }
+
+        ShowUserNames() {
+            this.p1 = this.currentGame.add.text(240, 330, 'Player 4', { font: '30px dimboregular', fill: '#000' });
+            this.p2 = this.currentGame.add.text(250, 1200, 'Player 2', { font: '30px dimboregular', fill: '#000' });
+            this.p3 = this.currentGame.add.text(560, 1200, 'Player 3', { font: '30px dimboregular', fill: '#000' });
+            this.p4 = this.currentGame.add.text(78, 1560, 'Player 1', { font: '30px dimboregular', fill: '#000' });
+        }
+
+        WinScreen() {
+            this.currentGame.add.sprite(0, 0, 'black');
+            this.HudBar.alpha = 0.2;
+            this.HudBar.width = 900;
+            this.HudBar.height = 1600;
+            this.currentGame.add.text(240, 500, 'YOU WIN!', { font: '80px dimboregular', fill: '#000' });
+            var continueButton = this.currentGame.add.text(240, 700, "Continue", { font: '50px dimboregular', fill: '#000' });
+            continueButton.inputEnabled = true;
+            continueButton.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Back", action: "Back", game: this.currentGame });
+        }
+
+        LoseScreen() {
+            this.currentGame.add.sprite(0, 0, 'black');
+            this.HudBar.alpha = 0.2;
+            this.HudBar.width = 900;
+            this.HudBar.height = 1600;
+            this.currentGame.add.text(240, 500, 'You lose.', { font: '80px dimboregular', fill: '#000' });
+            var continueButton = this.currentGame.add.text(240, 700, "Continue", { font: '50px dimboregular', fill: '#000' });
+            continueButton.inputEnabled = true;
+            continueButton.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Back", action: "Back", game: this.currentGame });
         }
     }
 
@@ -235,6 +274,8 @@
             this.signView = new SignButtonView(this.currentGame);
             this.signView.ShowHud();
             this.signView.ShowMessageBoard();
+            this.signView.ShowBackObj();
+            this.signView.ShowUserNames();
             this.waitEnd = 0;
 
             for (var i = 0; i < 4; i++) {
@@ -272,6 +313,14 @@
         drawAtNoInit(suit, value, moveToX, moveToY, hidden) {
             var retrievedCardView = this.map[suit + '-' + value];
             this.drawAt(retrievedCardView.x, retrievedCardView.y, suit, value, moveToX, moveToY, hidden);
+        }
+
+        showWinScreen() {
+            this.signView.WinScreen();
+        }
+
+        showLoseScreen() {
+            this.signView.LoseScreen();
         }
 
         drawAt(x, y, suit, value, moveToX, moveToY, hidden) {
@@ -374,7 +423,11 @@
 
                 this.drawAt(initX, initY, action.cardSuit, action.cardValue, finalX, finalY, hidden);
             }
-            else if (actionElements[0] == "Show") {
+            else if (actionElements[0] == "Win") {
+                this.showWinScreen();
+            } else if (actionElements[0] == "Lose") {
+                this.showLoseScreen();
+            } else if (actionElements[0] == "Show") {
                 var messageElements = action.actionName.split("`");
                 var message = messageElements[1];
                 // ActionImgObj;
@@ -385,59 +438,48 @@
                 if (actionElements[1] == "Title") {
                     this.signView.ShowActionTitle(message);
 
-                }
-                else if (actionElements[1] == "Message") {
+                } else if (actionElements[1] == "Message") {
                     this.signView.ShowMessageText(message);
-                }
-                else if (actionElements[1] == "Point") {
+                } else if (actionElements[1] == "Point") {
                     this.signView.ShowPoints(message);
-                }
-                else if (actionElements[1] == "Suit") {
+                } else if (actionElements[1] == "Suit") {
                     this.signView.ShowSelectedTrump(message);
                 }
 
                 //Show-SelectCardTrump
                 if (actionElements[1] == "SelectCardTrump") {
                     this.signView.ShowPickupOrPass();
-                }
-                else if (actionElements[1] == "SelectTrump") {
+                } else if (actionElements[1] == "SelectTrump") {
                     this.signView.Clear();
                     this.signView.ShowChooseOptions();
                     this.signView.ShowSuitOptions();
-                }
-                else if (actionElements[1] == "SelectCardSwitch") {
+                } else if (actionElements[1] == "SelectCardSwitch") {
                     this.signView.Clear();
                     this.signView.ShowMessageText('Select card to switch');
-                }
-                else if (actionElements[1] == "StartGame") {
+                } else if (actionElements[1] == "StartGame") {
                     this.signView.Clear();
                     this.signView.ShowActionTitle('Phase - Game start.');
                 }
-            }
-            else if (actionElements[0] == "Remove") {
+            } else if (actionElements[0] == "Remove") {
                 if (actionElements[1] == "Center") {
                     this.drawAtNoInit(action.cardSuit, action.cardValue, -300, -300, false);
-                }
-                else if (actionElements[1] == "Card" && actionElements[2].indexOf("Player") != -1) {
+                } else if (actionElements[1] == "Card" && actionElements[2].indexOf("Player") != -1) {
                     var playerNum = Number(actionElements[2].substr(actionElements[2].length - 1)) - 1;
                     this.players[playerNum].removeCard();
                     this.drawAtNoInit(action.cardSuit, action.cardValue, -1000, -1000, false);
                 }
-            }
-            else if (actionElements[0] == "Sort") {
+            } else if (actionElements[0] == "Sort") {
                 var playerNum = Number(actionElements[2].substr(actionElements[2].length - 1)) - 1;
                 var numCard = Number(actionElements[3]);
                 var finalX = this.players[playerNum].getSortedX(numCard);
                 var finalY = this.players[playerNum].getSortedY(numCard);
                 this.drawAtNoInit(action.cardSuit, action.cardValue, finalX, finalY, playerNum != 0);
-            }
-            else if (actionElements[0] == "Play") {
+            } else if (actionElements[0] == "Play") {
                 var playerNum = Number(actionElements[2].substr(actionElements[2].length - 1)) - 1;
 
                 this.drawAtNoInit(action.cardSuit, action.cardValue, this.getPlayerCenterX(playerNum), this.getPlayerCenterY(playerNum), false);
                 this.players[playerNum].removeCard();
-            }
-            else if (actionElements[0] == "Clean") {
+            } else if (actionElements[0] == "Clean") {
                 var suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
                 var values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 
@@ -446,15 +488,13 @@
                         this.drawAtNoInit(suits[i], values[j], -300, -300, false);
                     }
                 }
-            }
-            else if (actionElements[0] == "Clear") {
+            } else if (actionElements[0] == "Clear") {
                 var cardRep = actionElements[1].split(';');
                 var playerNum = Number(actionElements[2].substr(actionElements[2].length - 1)) - 1;
                 for (var i = 0; i < 4; i++) {
                     this.drawAtNoInit(cardRep[i].split(",")[0], cardRep[i].split(",")[1], this.getPlayerClearX(playerNum), this.getPlayerClearY(playerNum), false);
                 }
-            }
-            else if (actionElements[0] == "Pause") {
+            } else if (actionElements[0] == "Pause") {
                 this.setPause(action.duration);
             }
         }

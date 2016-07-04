@@ -1,6 +1,6 @@
 var ScreenView;
 (function (ScreenView_1) {
-    var hiddenCardsLogic = false;
+    var hiddenCardsLogic = true;
     var SignButtonView = (function () {
         function SignButtonView(game) {
             this.currentGame = game;
@@ -46,42 +46,73 @@ var ScreenView;
         SignButtonView.prototype.ShowPoints = function (text) {
             if (this.PointObj != null)
                 this.PointObj.destroy();
-            this.PointObj = this.currentGame.add.text(500, 55, text, { font: '30px dimboregular', fill: '#000' });
+            this.PointObj = this.currentGame.add.text(600, 5, text, { font: '30px dimboregular', fill: '#000' });
         };
         SignButtonView.prototype.ShowSelectedTrump = function (suit) {
             if (this.TrumpObj != null)
                 this.TrumpObj.destroy();
-            this.TrumpObj = this.currentGame.add.text(500, 55, suit, { font: '30px dimboregular', fill: '#000' });
+            this.TrumpObj = this.currentGame.add.text(600, 55, suit, { font: '30px dimboregular', fill: '#000' });
         };
         SignButtonView.prototype.ShowPickupOrPass = function () {
-            this.Pickup = this.currentGame.add.text(300, 1000, 'Pick up', { font: '30px dimboregular', fill: '#000' });
+            this.Pickup = this.currentGame.add.text(270, 1000, 'Pick up', { font: '50px dimboregular', fill: '#000' });
             this.Pickup.inputEnabled = true;
             this.Pickup.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Pick up", action: "Pick up", game: this.currentGame });
-            this.Pass = this.currentGame.add.text(600, 1000, 'Pass', { font: '30px dimboregular', fill: '#000' });
+            this.Pass = this.currentGame.add.text(515, 1000, 'Pass', { font: '50px dimboregular', fill: '#000' });
             this.Pass.inputEnabled = true;
             this.Pass.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Pass", action: "Pass", game: this.currentGame });
         };
         SignButtonView.prototype.ShowChooseOptions = function () {
-            this.Choose = this.currentGame.add.text(300, 1000, 'Choose', { font: '30px dimboregular', fill: '#000' });
-            this.Choose.inputEnabled = true;
-            this.Choose.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Choose", action: "Choose", game: this.currentGame });
-            this.Pass = this.currentGame.add.text(600, 1000, 'Pass', { font: '30px dimboregular', fill: '#000' });
+            //this.Choose = this.currentGame.add.text(270, 1000, 'Choose', { font: '50px dimboregular', fill: '#000' });
+            //this.Choose.inputEnabled = true;
+            //this.Choose.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Choose", action: "Choose", game: this.currentGame });
+            this.Pass = this.currentGame.add.text(515, 1000, 'Pass', { font: '50px dimboregular', fill: '#000' });
             this.Pass.inputEnabled = true;
             this.Pass.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Pass Choose", action: "Pass Choose", game: this.currentGame });
         };
         SignButtonView.prototype.ShowSuitOptions = function () {
-            this.Spades = this.currentGame.add.text(300, 500, 'Spades', { font: '30px dimboregular', fill: '#000' });
+            this.Spades = this.currentGame.add.text(300, 500, 'Spades', { font: '50px dimboregular', fill: '#000' });
             this.Spades.inputEnabled = true;
             this.Spades.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseSpades", action: "ChooseSpades", game: this.currentGame });
-            this.Hearts = this.currentGame.add.text(300, 600, 'Hearts', { font: '30px dimboregular', fill: '#000' });
+            this.Hearts = this.currentGame.add.text(300, 575, 'Hearts', { font: '50px dimboregular', fill: '#963232' });
             this.Hearts.inputEnabled = true;
             this.Hearts.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseHearts", action: "ChooseHearts", game: this.currentGame });
-            this.Diamonds = this.currentGame.add.text(300, 700, 'Diamonds', { font: '30px dimboregular', fill: '#000' });
+            this.Diamonds = this.currentGame.add.text(300, 650, 'Diamonds', { font: '50px dimboregular', fill: '#963232' });
             this.Diamonds.inputEnabled = true;
             this.Diamonds.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseDiamonds", action: "ChooseDiamonds", game: this.currentGame });
-            this.Clubs = this.currentGame.add.text(300, 800, 'Clubs', { font: '30px dimboregular', fill: '#000' });
+            this.Clubs = this.currentGame.add.text(300, 725, 'Clubs', { font: '50px dimboregular', fill: '#000' });
             this.Clubs.inputEnabled = true;
             this.Clubs.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "ChooseClubs", action: "ChooseClubs", game: this.currentGame });
+        };
+        SignButtonView.prototype.ShowBackObj = function () {
+            this.BackObj = this.currentGame.add.text(800, 5, "Back", { font: '30px dimboregular', fill: '#000' });
+            this.BackObj.inputEnabled = true;
+            this.BackObj.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Back", action: "Back", game: this.currentGame });
+        };
+        SignButtonView.prototype.ShowUserNames = function () {
+            this.p1 = this.currentGame.add.text(240, 330, 'Player 4', { font: '30px dimboregular', fill: '#000' });
+            this.p2 = this.currentGame.add.text(250, 1200, 'Player 2', { font: '30px dimboregular', fill: '#000' });
+            this.p3 = this.currentGame.add.text(560, 1200, 'Player 3', { font: '30px dimboregular', fill: '#000' });
+            this.p4 = this.currentGame.add.text(78, 1560, 'Player 1', { font: '30px dimboregular', fill: '#000' });
+        };
+        SignButtonView.prototype.WinScreen = function () {
+            this.currentGame.add.sprite(0, 0, 'black');
+            this.HudBar.alpha = 0.2;
+            this.HudBar.width = 900;
+            this.HudBar.height = 1600;
+            this.currentGame.add.text(240, 500, 'YOU WIN!', { font: '80px dimboregular', fill: '#000' });
+            var continueButton = this.currentGame.add.text(240, 700, "Continue", { font: '50px dimboregular', fill: '#000' });
+            continueButton.inputEnabled = true;
+            continueButton.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Back", action: "Back", game: this.currentGame });
+        };
+        SignButtonView.prototype.LoseScreen = function () {
+            this.currentGame.add.sprite(0, 0, 'black');
+            this.HudBar.alpha = 0.2;
+            this.HudBar.width = 900;
+            this.HudBar.height = 1600;
+            this.currentGame.add.text(240, 500, 'You lose.', { font: '80px dimboregular', fill: '#000' });
+            var continueButton = this.currentGame.add.text(240, 700, "Continue", { font: '50px dimboregular', fill: '#000' });
+            continueButton.inputEnabled = true;
+            continueButton.events.onInputDown.add(this.currentGame.handleUserInput, { suit: "Back", action: "Back", game: this.currentGame });
         };
         return SignButtonView;
     }());
@@ -177,6 +208,8 @@ var ScreenView;
             this.signView = new SignButtonView(this.currentGame);
             this.signView.ShowHud();
             this.signView.ShowMessageBoard();
+            this.signView.ShowBackObj();
+            this.signView.ShowUserNames();
             this.waitEnd = 0;
             for (var i = 0; i < 4; i++) {
                 this.players.push(new PlayerView(i));
@@ -202,6 +235,12 @@ var ScreenView;
         ScreenView.prototype.drawAtNoInit = function (suit, value, moveToX, moveToY, hidden) {
             var retrievedCardView = this.map[suit + '-' + value];
             this.drawAt(retrievedCardView.x, retrievedCardView.y, suit, value, moveToX, moveToY, hidden);
+        };
+        ScreenView.prototype.showWinScreen = function () {
+            this.signView.WinScreen();
+        };
+        ScreenView.prototype.showLoseScreen = function () {
+            this.signView.LoseScreen();
         };
         ScreenView.prototype.drawAt = function (x, y, suit, value, moveToX, moveToY, hidden) {
             var retrievedCardView = this.map[suit + '-' + value];
@@ -293,6 +332,12 @@ var ScreenView;
                     }
                 }
                 this.drawAt(initX, initY, action.cardSuit, action.cardValue, finalX, finalY, hidden);
+            }
+            else if (actionElements[0] == "Win") {
+                this.showWinScreen();
+            }
+            else if (actionElements[0] == "Lose") {
+                this.showLoseScreen();
             }
             else if (actionElements[0] == "Show") {
                 var messageElements = action.actionName.split("`");

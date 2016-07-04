@@ -25,12 +25,14 @@ var Namespace;
                 }
                 this.load.image("cardBack", "assets/cardBack_red3.png");
                 this.load.image("black", "assets/black.png");
+                this.load.image("icon", "assets/icon.png");
             };
             Preloader.prototype.create = function () {
                 this.loadingBar.setFillPercent(100);
                 var tween = this.game.add.tween(this.loadingBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
                 // loading screen will have a white background
                 this.game.stage.backgroundColor = '#000';
+                this.game.add.text(500, 200, "EUCHRE!", { font: '60px dimboregular', fill: '#000' });
                 // scaling options
                 // this makes it scale to the screen
                 this.scale.scaleMode = Phaser.ScaleManager.NO_SCALE;
